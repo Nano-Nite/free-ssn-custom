@@ -75,6 +75,7 @@
 
       #container {
         width: 100%;
+        max-width: 800px;
       }
 
       .style-glass .message-wrapper {
@@ -87,8 +88,8 @@
         transform: translateY(0px);
         margin: 0 2%;
         display: flex;
-        flex-direction: column-reverse;
-        align-items: start;
+        flex-direction: column;
+        align-items: stretch;
         /* background: rgb(255, 255, 255, 0.7); */
       }
 
@@ -106,34 +107,34 @@
         padding: 0;
         /* z-index: 99; */
         /* backdrop-filter: blur(2px); */
-        margin: 4%;
+        margin: 3%;
         background: #1f8aff;
-        border-radius: 49px;
+        border-radius: 30px;
       }
 
       /* Tail */
-      .style-glass .message-wrapper::after {
+      /* .style-glass .message-wrapper::after {
         content: "";
         position: absolute;
-        bottom: 114px;
-        left: 60px;
+        bottom: 40%;
+        left: 3.1%;
         width: 0;
         height: 0;
-        border-left: 34px solid transparent;
+        border-left: 24px solid transparent;
         border-right: 0px solid #1f8aff;
-        border-top: 58px solid #1f8aff;
+        border-bottom: 44px solid #1f8aff;
       }
       .style-glass .message-wrapper::before {
         content: "";
         position: absolute;
-        bottom: 114px;
-        left: 87px;
+        bottom: 40%;
+        left: 5.1%;
         width: 0;
         height: 0;
         border-left: 6px solid transparent;
         border-right: 22px solid transparent;
-        border-top: 34px solid #1f8aff;
-      }
+        border-top: 41px solid #1f8aff;
+      } */
 
       .texture {
         position: absolute;
@@ -147,12 +148,12 @@
       }
 
       .avatar {
-        width: 90px;
+        width: 75px;
         height: auto;
         border-radius: 50%;
         object-fit: cover;
         flex-shrink: 0;
-        margin-left: 50px;
+        margin-left: 2%;
         border: 2px solid #fff;
         box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
       }
@@ -225,12 +226,13 @@
         border-radius: 60px;
         background: #fff;
         color: #1f8aff;
-        padding: 1%;
+        padding: 2%;
         position: absolute;
-        top: -14px;
-        left: 55px;
+        top: 2%;
+        left: 15%;
         z-index: 99;
         box-shadow: rgba(0, 0, 0, 0.35) 0px 3px 10px;
+        align-items: center;
       }
 
       .style-glass .text {
