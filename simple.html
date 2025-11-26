@@ -555,10 +555,10 @@
           }
 
           // Auto-hide after showtime
-          // if (messageTimeout) clearTimeout(messageTimeout);
-          // messageTimeout = setTimeout(() => {
-          //   hideMessage();
-          // }, showtime);
+          if (messageTimeout) clearTimeout(messageTimeout);
+          messageTimeout = setTimeout(() => {
+            hideMessage();
+          }, showtime);
         });
       }
 
