@@ -296,33 +296,6 @@
     </style>
   </head>
   <body>
-    <svg xmlns="http://www.w3.org/2000/svg" style="display: none">
-      <filter id="liquid-filter" x="-50%" y="-50%" width="200%" height="200%">
-        <feImage
-          id="img"
-          href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMoAAADJCAYAAABi8a0GAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAGw5SURBVHhe7b1dr25Jkh4UkWvt01XdU9UeMzMCGwT2tC1hT4+5RiCuMBYCwY8BAY"
-          preserveAspectRatio="none"
-        />
-        <feTurbulence
-          id="turb"
-          baseFrequency="0.012"
-          numOctaves="1"
-          seed="5"
-          type="fractalNoise"
-          result="noise"
-        />
-        move the noise for animation
-        <feDisplacementMap
-          id="disp"
-          in="SourceGraphic"
-          scale="20"
-          xChannelSelector="R"
-          yChannelSelector="G"
-          result="displaced"
-        />
-        <feComposite in="displaced" in2="SourceGraphic" operator="in" />
-      </filter>
-    </svg>
     <div id="container">
       <div id="output"></div>
     </div>
@@ -336,7 +309,6 @@
         urlParams.get("room") ||
         urlParams.get("roomid") ||
         "TESTROOM";
-      const style = urlParams.get("style") || "glass"; // glass, neon, minimal, gaming, twitch
       const password =
         urlParams.get("password") ||
         urlParams.get("pass") ||
@@ -378,7 +350,6 @@
         iframe.style.left = "-100px";
         iframe.style.top = "-100px";
         iframe.id = "frame1";
-        // iframe.allow = "midi;geolocation;microphone;"; // microphone is needed for Safari webRTC P2P connections
         document.body.appendChild(iframe);
 
         var eventMethod = window.addEventListener
@@ -612,10 +583,10 @@
           }
 
           // Auto-hide after showtime
-          // if (messageTimeout) clearTimeout(messageTimeout);
-          // messageTimeout = setTimeout(() => {
-          //   hideMessage();
-          // }, showtime);
+          if (messageTimeout) clearTimeout(messageTimeout);
+          messageTimeout = setTimeout(() => {
+            hideMessage();
+          }, showtime);
         });
       }
 
