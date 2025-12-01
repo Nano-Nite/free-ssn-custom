@@ -1,13 +1,7 @@
 # 📌 Chat Bubble Templates Collection
 
-A collection of **HTML + CSS chat bubble templates** for overlays, live-chat UI, chatbots, and streaming widgets.  
-All templates are lightweight, responsive, and fully customizable.
-
----
-
-## 📁 Available Templates
-
-Below is the list of available chat bubble templates included in this repository:
+A collection of **chat bubble templates** for overlays, live-chat UI, chatbots, and streaming widgets.  
+Below is the list of available chat bubble templates:
 
 ---
 
@@ -56,7 +50,7 @@ https://lynk.id/houkaituna
 ## 📦 Installation
 
 follow the step correctly
-http://lynk.id/houkaituna/jkxx3ywk9nxr
+http://lynk.id/houkaituna/c/jkxx3ywk9nxr/checkout
 
 ---
 
