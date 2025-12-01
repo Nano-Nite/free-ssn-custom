@@ -5,38 +5,41 @@ Below is the list of available chat bubble templates:
 
 ---
 
-### **1. iMessage Style**
-Apple-style bubble inspired by iMessage UI.
-
+### **iMessage Style**
 ![iMessage Template](./preview/imessage.png)
 
 ---
 
-### **2. Pastel Bubble**
-Soft pastel theme perfect for cute or aesthetic layouts.
-
+### **Pastel Bubble**
 ![Pastel Template](./preview/pastel.png)
 
 ---
 
-### **3. Simple Bubble**
-A classic simple bubble with rounded corners. have rotating Avatar
-
+### **Simple Bubble**
 ![Simple Template](./preview/simple.png)
 
 ---
 
-### **4. Simple Gradient**
-Gradient-based modern chat bubble.
-
+### **Simple Gradient**
 ![Simple Gradient](./preview/simplegradient.png)
 
 ---
 
-### **5. Vertical Layout**
-Vertical stacked chat layout with bubble spacing.
+### **Vertical Layout**
 
 ![Vertical Template](./preview/vertical.png)
+
+---
+
+### **Simple Dark Layout**
+
+![Simple Dark Template](./preview/simpledark.png)
+
+---
+
+### **Gamink**
+
+![Gamink Template](./preview/gamink.png)
 
 ---
 
