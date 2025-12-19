@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>iMessage Chat Dock</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      @font-face {
+        font-family: "Arima-Regular";
+        src: url("https://raw.githubusercontent.com/NDISCOVER/Arima-Font/master/fonts/static/ttf/Arima-Regular.ttf")
+          format("truetype");
+        font-weight: 300;
+        font-style: normal;
+        font-size: large;
+      }
+
+      body,
+      html {
+        margin: 0;
+        padding: 0;
+        width: auto;
+        height: auto;
+        background: transparent;
+        overflow: hidden;
+        font-family: "Arima-Regular", sans-serif;
+      }
+
+      #chat {
+        position: absolute;
+        left: 50%;
+        bottom: 0;
+        transform: translateX(-50%);
+        width: 100%;
+        max-width: 350px;
+        padding: 0 20px;
+        box-sizing: border-box;
+        padding-bottom: 56px;
+      }
+
+      .msg.left {
+        margin-left: 0;
+        margin-right: auto;
+        background: #ffffff;
+        color: #000;
+        padding: 10px 14px;
+        margin-bottom: 27px;
+        border-radius: 6px;
+        border-bottom: 4px solid #c7c7c7;
+        border-right: 1px solid #c7c7c7;
+        border-top: 1px solid #c7c7c7;
+        box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.25);
+        opacity: 0;
+        transform: translateY(20px);
+        transition: 0.45s ease;
+        width: 264px;
+        max-width: 264px;
+        position: relative;
+      }
+
+      .msg.right {
+        /* flex-direction: row-reverse; */
+        margin-right: 0;
+        margin-left: auto;
+        text-align: right; /* optional, keeps text aligned like chat apps */
+        background: #ffffff;
+        color: #000;
+        padding: 10px 14px;
+        margin-bottom: 27px;
+        border-radius: 6px;
+        border-bottom: 4px solid #2a7bf3;
+        border-right: 1px solid #c7c7c7;
+        border-top: 1px solid #c7c7c7;
+        box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.25);
+        opacity: 0;
+        transform: translateY(20px);
+        transition: 0.45s ease;
+        width: 264px;
+        max-width: 264px;
+        position: relative;
+        align-items: flex-end;
+      }
+
+      .msg.left::after {
+        content: "";
+        position: absolute;
+        bottom: -14px;
+        left: 0;
+        width: 0;
+        height: 0;
+        border-top: 15px solid #ffffff;
+        border-right: 15px solid transparent;
+        filter: drop-shadow(0px 3px 1px rgba(0, 0, 0, 0.25));
+      }
+
+      .msg.right::after {
+        content: "";
+        position: absolute;
+        bottom: -14px;
+        right: 0;
+        width: 0;
+        height: 0;
+        border-top: 15px solid #ffffff;
+        border-left: 15px solid transparent;
+        filter: drop-shadow(0px 3px 1px rgba(0, 0, 0, 0.25));
+      }
+
+      .msg.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .fade-out {
+        opacity: 0 !important;
+      }
+
+      .avatar.left {
+        width: 36px;
+        height: 36px;
+        border-radius: 4px;
+        background-size: cover;
+        margin-right: 10px;
+        object-fit: cover;
+        flex-shrink: 0;
+      }
+
+      .avatar.right {
+        width: 36px;
+        height: 36px;
+        border-radius: 4px;
+        background-size: cover;
+        margin-left: 10px;
+        object-fit: cover;
+        flex-shrink: 0;
+      }
+
+      .row {
+        display: flex;
+        align-items: center;
+      }
+
+      .name {
+        font-weight: 700;
+        font-size: 0.95em;
+        margin-bottom: 2px;
+        color: #1a1a1a;
+      }
+
+      .text {
+        margin-top: 4px;
+        font-size: 0.88em;
+        line-height: 1.4;
+        color: #333;
+      }
+
+      .time.left {
+        font-size: 0.72em;
+        color: #777;
+        margin-top: 6px;
+        text-align: right;
+      }
+
+      .time.right {
+        font-size: 0.72em;
+        color: #777;
+        margin-top: 6px;
+        text-align: left;
+      }
+
+      .msg-content.left {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        align-items: flex-start;
+      }
+
+      .msg-content.right {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        align-items: flex-end;
+      }
+
+      .message-body {
+        max-width: 240px; /* prevents reaction payload from breaking layout */
+      }
+
+      .time {
+        font-size: 0.72em;
+        color: #777;
+        margin-top: 4px;
+        width: 100%;
+      }
+
+      /* ===== iMessage Header ===== */
+      #header {
+        height: 88px;
+        background: #f5f5f7;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+        position: relative;
+        z-index: 99;
+      }
+
+      .imessage-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 100%;
+        padding: 0 16px;
+      }
+
+      /* Left & Right buttons */
+      .header-left,
+      .header-right {
+        width: 44px;
+        height: 44px;
+        background: #fff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+      }
+
+      /* icon itself */
+      .header-left img,
+      .header-right img {
+        width: 22px;
+        height: 22px;
+        padding: 0; /* IMPORTANT */
+        object-fit: contain;
+      }
+
+      /* Center block */
+      .header-center {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      /* Group avatars */
+      .group-avatars {
+        display: flex;
+        align-items: center;
+      }
+
+      .group-avatars img,
+      .group-avatars .overflow {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        border: 2px solid #f5f5f7;
+        object-fit: cover;
+        margin-left: -8px;
+        background: #ddd;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        font-weight: 600;
+        color: #555;
+      }
+
+      .group-avatars img:first-child,
+      .group-avatars .overflow:first-child {
+        margin-left: 0;
+      }
+
+      /* subtle iOS pop-in */
+      .group-avatars img {
+        animation: avatarIn 0.25s ease-out;
+      }
+
+      @keyframes avatarIn {
+        from {
+          transform: scale(0.7);
+          opacity: 0;
+        }
+        to {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
+      /* Group text */
+      .group-title {
+        font-size: 13px;
+        font-weight: 600;
+        color: #000;
+        opacity: 0.85;
+      }
+
+      /* ===== iMessage Footer ===== */
+      #footer {
+        position: fixed;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100%;
+        /* max-width: 350px; */
+        background: #f5f5f7;
+        z-index: 99;
+      }
+
+      .imessage-footer {
+        padding: 8px 12px 12px;
+      }
+
+      /* Input bar */
+      .input-bar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      /* + button */
+      .plus-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: #e5e5ea;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .plus-btn img {
+        width: 16px;
+        height: 16px;
+        object-fit: contain;
+        opacity: 0.75;
+      }
+
+      /* Input pill */
+      .input-pill {
+        flex: 1;
+        height: 34px;
+        background: #fff;
+        border-radius: 18px;
+        border: 1px solid rgba(0, 0, 0, 0.12);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 10px 0 12px;
+        box-sizing: border-box;
+      }
+
+      .placeholder {
+        font-size: 13px;
+        color: #9a9a9a;
+      }
+
+      /* Mic */
+      .mic-icon {
+        width: 16px;
+        height: 16px;
+        opacity: 0.7;
+      }
+
+      /* Home bar */
+      .home-indicator {
+        width: 120px;
+        height: 5px;
+        background: #000;
+        border-radius: 3px;
+        margin: 8px auto 0;
+        opacity: 0.85;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="header">
+      <div class="imessage-header">
+        <!-- Back -->
+        <div class="header-left">
+          <img src="assets/images/back_button.png" alt="Back" />
+        </div>
+
+        <!-- Center group info -->
+        <div class="header-center">
+          <div class="group-avatars" id="groupAvatars">
+            <!-- <img src="assets/images/instagram.png" />
+            <img src="assets/images/facebook.png" />
+            <img src="assets/images/tiktok.png" /> -->
+          </div>
+          <div class="group-title">
+            <span id="peopleCount">0</span> People Commented
+          </div>
+        </div>
+
+        <!-- Video Call -->
+        <div class="header-right">
+          <img src="assets/images/vc_button.png" alt="Video Call" />
+        </div>
+      </div>
+    </div>
+    <div id="chat"></div>
+    <div id="footer">
+      <div class="imessage-footer">
+        <!-- Input bar -->
+        <div class="input-bar">
+          <div class="plus-btn">
+            <img src="assets/images/plus_button.png" alt="Add" />
+          </div>
+
+          <div class="input-pill">
+            <span class="placeholder">Send a message</span>
+            <img src="assets/images/mic.png" class="mic-icon" />
+          </div>
+        </div>
+
+        <!-- Home indicator -->
+        <div class="home-indicator"></div>
+      </div>
+    </div>
+
+    <script>
+      const MAX_MESSAGES = 200;
+      let count = 0;
+      let messageQueue = [];
+      let userCount = new Map();
+
+      const chat = document.getElementById("chat");
+
+      document.addEventListener(
+        "click",
+        () => {
+          const snd = document.getElementById("notifSound");
+          if (snd) snd.play().then(() => snd.pause());
+        },
+        { once: true }
+      );
+
+      // function addAvatar(src) {
+      const avatarsEl = document.getElementById("groupAvatars");
+      const peopleCountEl = document.getElementById("peopleCount");
+
+      const MAX_AVATARS = 3;
+      const USER_TIMEOUT = 60_000; // 60s inactive = remove
+
+      const users = new Map();
+      // username => { imgEl, avatarURL, lastSeen }
+
+      function updatePeopleCount() {
+        peopleCountEl.textContent = users.size;
+      }
+
+      function renderAvatars() {
+        avatarsEl.innerHTML = "";
+
+        const entries = Array.from(users.values());
+        const visible = entries.slice(0, MAX_AVATARS);
+        const overflow = entries.length - MAX_AVATARS;
+
+        visible.forEach((u) => avatarsEl.appendChild(u.imgEl));
+
+        if (overflow > 0) {
+          const more = document.createElement("div");
+          more.className = "overflow";
+          more.textContent = `+${overflow}`;
+          avatarsEl.appendChild(more);
+        }
+      }
+
+      function addOrUpdateUser(username, avatarURL) {
+        const now = Date.now();
+        const defaultAvatar = "assets/images/tiktok.png";
+
+        if (users.has(username)) {
+          const u = users.get(username);
+          u.lastSeen = now;
+
+          // avatar changed → replace
+          if (avatarURL && u.avatarURL !== avatarURL) {
+            u.avatarURL = avatarURL;
+            u.imgEl.src = avatarURL;
+          }
+          return;
+        }
+
+        const img = document.createElement("img");
+        img.src = avatarURL || defaultAvatar;
+        img.alt = username;
+        img.onerror = () => (img.src = defaultAvatar);
+
+        users.set(username, {
+          imgEl: img,
+          avatarURL,
+          lastSeen: now,
+        });
+
+        updatePeopleCount();
+        renderAvatars();
+      }
+
+      /* Remove inactive users */
+      // setInterval(() => {
+      //   const now = Date.now();
+      //   let changed = false;
+
+      //   for (const [name, u] of users) {
+      //     if (now - u.lastSeen > USER_TIMEOUT) {
+      //       users.delete(name);
+      //       changed = true;
+      //     }
+      //   }
+
+      //   if (changed) {
+      //     updatePeopleCount();
+      //     renderAvatars();
+      //   }
+      // }, 10_000);
+      // }
+
+      function addMessage(d) {
+        if (!d.chatname && !d.chatmessage) return;
+
+        if (userCount.has(d.chatname)) {
+          let curr = userCount.get(d.chatname);
+          userCount.set(d.chatname, curr + 1);
+        } else {
+          userCount.set(d.chatname, 1);
+          // addAvatar(
+          //   d.chatimg && d.chatimg !== "undefined" && d.chatimg !== ""
+          //     ? d.chatimg
+          //     : "assets/images/tiktok.png"
+          // );
+        }
+
+        document.getElementById("peopleCount").textContent = userCount.size;
+        console.log(d.chatimg);
+        addOrUpdateUser(d.chatname, d.chatimg);
+
+        // Play notification audio
+        const snd = document.getElementById("notifSound");
+        if (snd) {
+          snd.volume = 0.3;
+          snd.currentTime = 0;
+
+          snd.play().catch((err) => {
+            console.log("Audio blocked, waiting for user interaction:", err);
+          });
+        }
+
+        const div = document.createElement("div");
+        div.className = "msg";
+
+        const msgs = chat.querySelectorAll(".msg");
+        if (count === 0) {
+          div.classList.add("left");
+          count++;
+        } else {
+          div.classList.add("right");
+          count--;
+        }
+
+        const defaultAvatar =
+          "https://cdn-icons-png.flaticon.com/512/847/847969.png";
+
+        let avatarURL =
+          d.chatimg && d.chatimg !== "undefined" && d.chatimg !== ""
+            ? d.chatimg
+            : defaultAvatar;
+
+        const avatar = `
+              <div class="avatar"
+                  style="background-image:url('${avatarURL}')"
+                  onerror="this.style.backgroundImage='url(${defaultAvatar})'">
+              </div>
+          `;
+
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+
+        if (count === 0) {
+          div.classList.add("right");
+
+          div.innerHTML = `
+              <div class="msg-content right">
+                  <div class="row">
+                      <div class="message-body">
+                          <div class="name">${d.chatname || ""}</div>
+                          <div class="text" style="display: flex;flex-direction: row-reverse;">${
+                            d.chatmessage.toLowerCase() === "p"
+                              ? `<img src="assets/icon/ping.png" alt="PING!!!" style="margin-left:6px;width:15px;height:15px"><b style="color:red">PING!!!</b>`
+                              : `<img src="assets/icon/read.png" alt="READ" style="width: 15px;height: 15px;margin-left: 6px;"><div style="margin-left:0">` +
+                                  (d.chatmessage.length === 0
+                                    ? `<div style="font-style: italic;">is sending you a message...</div>`
+                                    : d.chatmessage) +
+                                  `</div>` || ""
+                          }</div>
+                      </div>
+                      <div class="avatar right"
+                        style="background-image:url('${avatarURL}')"
+                        onerror="this.style.backgroundImage='url(${defaultAvatar})'">
+                      </div>
+                  </div>
+                  <div class="time right">${timeStr}</div>
+              </div>
+          `;
+        } else {
+          div.classList.add("left");
+
+          div.innerHTML = `
+            <div class="msg-content left">
+                <div class="row">
+                    <div class="avatar left"
+                      style="background-image:url('${avatarURL}')"
+                      onerror="this.style.backgroundImage='url(${defaultAvatar})'">
+                    </div>
+                    <div class="message-body">
+                        <div class="name">${d.chatname || ""}</div>
+                        <div class="text">${
+                          d.chatmessage.toLowerCase() === "p"
+                            ? `<img src="assets/icon/ping.png" alt="PING!!!" style="position:absolute;width:15px;height:15px"><b style="color:red;margin-left:20px">PING!!!</b>`
+                            : `<img src="assets/icon/read.png" alt="READ" style="position:absolute;width:15px;height:15px"><div style="margin-left:20px">` +
+                                (d.chatmessage.length === 0
+                                  ? `<div style="font-style: italic;">is sending you a message...</div>`
+                                  : d.chatmessage) +
+                                `</div>` || ""
+                        }</div>
+                    </div>
+                </div>
+                <div class="time left">${timeStr}</div>
+            </div>
+        `;
+        }
+
+        chat.appendChild(div);
+
+        // trigger animation
+        requestAnimationFrame(() => div.classList.add("visible"));
+
+        // fade out after 10s
+        // setTimeout(()=>div.classList.add("fade-out"), 10000);
+
+        // remove after fade (15s)
+        // setTimeout(()=>{
+        //     if(div.parentNode) div.parentNode.removeChild(div);
+        // }, 15000);
+
+        messageQueue.push(div);
+
+        // if (messageQueue.length > MAX_MESSAGES) {
+        //   let old = messageQueue.shift();
+        //   old.classList.add("fade-out");
+
+        //   setTimeout(() => {
+        //     if (old.parentNode) old.remove();
+        //   }, 500);
+        // }
+      }
+
+      // --- Social Stream Ninja Integration ---
+      var urlParams = new URLSearchParams(window.location.search);
+      var roomID = urlParams.get("session") || "iWWnKL28tQ";
+      var password = "false";
+
+      var iframe = document.createElement("iframe");
+      iframe.src =
+        "https://vdo.socialstream.ninja/?ln&salt=vdo.ninja&password=" +
+        password +
+        "&push&label=dock&vd=0&ad=0&novideo&noaudio&autostart&cleanoutput&room=" +
+        roomID;
+      iframe.style = "width:0;height:0;position:fixed;left:-100px;top:-100px;";
+      document.body.appendChild(iframe);
+
+      window.addEventListener("message", (e) => {
+        if (e.source !== iframe.contentWindow) return;
+        const data = e.data?.dataReceived?.overlayNinja;
+        if (data) addMessage(data);
+      });
+
+      // Optional WebSocket listener
+      if (urlParams.has("server")) {
+        const socket = new WebSocket(urlParams.get("server"));
+        socket.onmessage = (e) => {
+          try {
+            addMessage(JSON.parse(e.data));
+          } catch {}
+        };
+      }
+    </script>
+    <audio
+      id="notifSound"
+      src="assets/sound/BBM-Tone-Notification.mp3"
+      preload="auto"
+    ></audio>
+  </body>
+</html>
