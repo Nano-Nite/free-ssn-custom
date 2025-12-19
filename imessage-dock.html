@@ -28,8 +28,13 @@
         height: auto;
         background: transparent;
         overflow: hidden;
-        font-family: "Arima-Regular", sans-serif;
-        background:white;
+        /* font-family: "Arima-Regular", sans-serif; */
+        background: white;
+      }
+
+      * {
+        font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+          "Helvetica Neue", Arial, sans-serif;
       }
 
       #chat {
@@ -38,7 +43,7 @@
         bottom: 0;
         transform: translateX(-50%);
         width: 100%;
-        max-width: 350px;
+        max-width: 430px;
         padding: 0 20px;
         box-sizing: border-box;
         padding-bottom: 75px;
@@ -50,12 +55,12 @@
         background: #ffffff;
         color: #000;
         padding: 10px 14px;
-        margin-bottom: 27px;
+        /* margin-bottom: 27px; */
         border-radius: 6px;
-        border-bottom: 4px solid #c7c7c7;
-        border-right: 1px solid #c7c7c7;
-        border-top: 1px solid #c7c7c7;
-        box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.25);
+        /* border-bottom: 4px solid #c7c7c7; */
+        /* border-right: 1px solid #c7c7c7; */
+        /* border-top: 1px solid #c7c7c7; */
+        /* box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.25); */
         opacity: 0;
         transform: translateY(20px);
         transition: 0.45s ease;
@@ -87,7 +92,7 @@
         align-items: flex-end;
       }
 
-      .msg.left::after {
+      /* .msg.left::after {
         content: "";
         position: absolute;
         bottom: -14px;
@@ -97,6 +102,21 @@
         border-top: 15px solid #ffffff;
         border-right: 15px solid transparent;
         filter: drop-shadow(0px 3px 1px rgba(0, 0, 0, 0.25));
+      } */
+
+      .message-text::before {
+        content: "";
+        bottom: 24px;
+        left: 51px;
+        position: absolute;
+        border: 0px solid;
+        display: block;
+        width: 24px;
+        height: 24px;
+        background-color: transparent;
+        border-bottom-left-radius: 100%;
+        border-bottom-right-radius: 100%;
+        box-shadow: 9px 9px 0px 4px #e9e8eb;
       }
 
       .msg.right::after {
@@ -111,6 +131,14 @@
         filter: drop-shadow(0px 3px 1px rgba(0, 0, 0, 0.25));
       }
 
+      .title-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-direction: row;
+        padding: 0 20px;
+      }
+
       .msg.visible {
         opacity: 1;
         transform: translateY(0);
@@ -123,9 +151,9 @@
       .avatar.left {
         width: 36px;
         height: 36px;
-        border-radius: 4px;
+        border-radius: 30px;
         background-size: cover;
-        margin-right: 10px;
+        margin-right: 24px;
         object-fit: cover;
         flex-shrink: 0;
       }
@@ -142,34 +170,43 @@
 
       .row {
         display: flex;
-        align-items: center;
+        align-items: end;
       }
 
       .name {
-        font-weight: 700;
-        font-size: 0.95em;
-        margin-bottom: 2px;
-        color: #1a1a1a;
+        /* font-weight: 700; */
+        font-size: 0.7em;
+        /* margin-bottom: 2px; */
+        color: #777;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        width: 630px;
       }
 
       .text {
-        margin-top: 4px;
-        font-size: 0.88em;
+        margin-top: 7px;
+        font-size: 18px;
         line-height: 1.4;
         color: #333;
+        /* box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.25); */
+        padding: 7%;
+        background: #e9e8eb;
+        border-radius: 20px;
+        /* font-weight: 700; */
       }
 
       .time.left {
-        font-size: 0.72em;
+        font-size: 0.7em;
         color: #777;
-        margin-top: 6px;
+        /* margin-top: 6px; */
         text-align: right;
       }
 
       .time.right {
         font-size: 0.72em;
         color: #777;
-        margin-top: 6px;
+        /* margin-top: 6px; */
         text-align: left;
       }
 
@@ -188,13 +225,13 @@
       }
 
       .message-body {
-        max-width: 240px; /* prevents reaction payload from breaking layout */
+        max-width: 270px;
       }
 
       .time {
         font-size: 0.72em;
         color: #777;
-        margin-top: 4px;
+        /* margin-top: 4px; */
         width: 100%;
       }
 
@@ -505,25 +542,6 @@
         renderAvatars();
       }
 
-      /* Remove inactive users */
-      // setInterval(() => {
-      //   const now = Date.now();
-      //   let changed = false;
-
-      //   for (const [name, u] of users) {
-      //     if (now - u.lastSeen > USER_TIMEOUT) {
-      //       users.delete(name);
-      //       changed = true;
-      //     }
-      //   }
-
-      //   if (changed) {
-      //     updatePeopleCount();
-      //     renderAvatars();
-      //   }
-      // }, 10_000);
-      // }
-
       function addMessage(d) {
         if (!d.chatname && !d.chatmessage) return;
 
@@ -532,11 +550,6 @@
           userCount.set(d.chatname, curr + 1);
         } else {
           userCount.set(d.chatname, 1);
-          // addAvatar(
-          //   d.chatimg && d.chatimg !== "undefined" && d.chatimg !== ""
-          //     ? d.chatimg
-          //     : "assets/images/tiktok.png"
-          // );
         }
 
         document.getElementById("peopleCount").textContent = userCount.size;
@@ -561,10 +574,11 @@
         if (count === 0) {
           div.classList.add("left");
           count++;
-        } else {
-          div.classList.add("right");
-          count--;
         }
+        //  else {
+        //   div.classList.add("right");
+        //   count--;
+        // }
 
         const defaultAvatar =
           "https://cdn-icons-png.flaticon.com/512/847/847969.png";
@@ -624,19 +638,20 @@
                       onerror="this.style.backgroundImage='url(${defaultAvatar})'">
                     </div>
                     <div class="message-body">
-                        <div class="name">${d.chatname || ""}</div>
-                        <div class="text">${
-                          d.chatmessage.toLowerCase() === "p"
-                            ? `<img src="assets/icon/ping.png" alt="PING!!!" style="position:absolute;width:15px;height:15px"><b style="color:red;margin-left:20px">PING!!!</b>`
-                            : `<img src="assets/icon/read.png" alt="READ" style="position:absolute;width:15px;height:15px"><div style="margin-left:20px">` +
-                                (d.chatmessage.length === 0
-                                  ? `<div style="font-style: italic;">is sending you a message...</div>`
-                                  : d.chatmessage) +
-                                `</div>` || ""
-                        }</div>
+                        <div class="title-bar">
+                            <div class="name">${d.chatname || ""}</div>
+                            <div class="time left">${timeStr}</div>
+                        </div>
+                        <div class="message-text">
+                          <div class="text">${
+                            d.chatmessage.length === 0
+                              ? `<div style="font-style: italic;">is sending you a message...</div>`
+                              : d.chatmessage
+                          }</div>
+                        </div>
                     </div>
                 </div>
-                <div class="time left">${timeStr}</div>
+                
             </div>
         `;
         }
