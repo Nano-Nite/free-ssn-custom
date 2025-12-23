@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SSN Envelope Overlay</title>
+
+    <style>
+      /* ========== BASE ========== */
+      * {
+        box-sizing: border-box;
+        font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+          "Helvetica Neue", Arial, sans-serif;
+      }
+
+      body {
+        margin: 0;
+        background: transparent;
+        overflow: hidden;
+      }
+
+      /* ========== CONTAINER ========== */
+      #output {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+      }
+
+      /* ========== ENVELOPE ========== */
+      .container {
+        position: absolute;
+        left: 50%;
+        bottom: 0;
+        width: 280px;
+        height: 380px;
+        perspective: 900px;
+
+        /* CAMERA VARIABLES */
+        --cam-y: 0px;
+        --cam-scale: 1;
+
+        transform: translateX(-50%) translateY(var(--cam-y))
+          scale(var(--cam-scale));
+
+        transform-origin: center center;
+        transition: transform 1.1s cubic-bezier(0.22, 0.61, 0.36, 1);
+      }
+
+      /* ========== CARD ========== */
+      .card {
+        position: absolute;
+        top: 20px;
+        left: 50%;
+        width: 220px;
+        background: linear-gradient(180deg, #d5d5d5, #d3d3d3);
+        border-radius: 16px;
+        box-shadow: 5px -3px 3px rgba(0, 0, 0, 0.45);
+        transform: translateX(-50%) translateY(60px);
+        opacity: 0;
+        transition: transform 0.9s cubic-bezier(0.22, 0.61, 0.36, 1),
+          opacity 0.4s ease;
+        z-index: 6;
+
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+
+        font-weight: 600;
+        letter-spacing: 1px;
+      }
+
+      .open .card {
+        opacity: 1;
+        transform: translateX(-50%) translateY(-20px);
+      }
+
+      /* ========== CARD CONTENT ========== */
+      .avatar {
+        width: 100%;
+        height: 200px;
+        border-radius: 12px;
+        background-size: cover;
+        background-position: center;
+        background-color: #111;
+      }
+
+      .username {
+        font-weight: 600;
+        text-align: center;
+        text-overflow: ellipsis;
+        overflow: hidden;
+      }
+
+      .text {
+        font-size: 14px;
+        text-align: center;
+        color: #333;
+      }
+
+      /* ========== FLAPS & BODY ========== */
+      .flap-top-wrap,
+      .envelope-body,
+      .flap-left,
+      .flap-right,
+      .flap-bottom {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        height: 160px;
+        transition: transform 0.7s cubic-bezier(0.22, 0.61, 0.36, 1),
+          opacity 0.5s ease;
+      }
+
+      .flap-top-wrap {
+        bottom: 160px;
+        height: 87px;
+        transform-origin: bottom center;
+        transform: rotateX(-180deg);
+        z-index: 4;
+      }
+
+      .open .flap-top-wrap {
+        transform: rotateX(0deg);
+      }
+
+      .flap-top {
+        width: 100%;
+        height: 100%;
+        background: #bd9a84;
+        clip-path: polygon(0 100%, 50% 0, 100% 100%);
+      }
+
+      .envelope-body {
+        background: #bd9a84;
+        border-radius: 6px;
+        z-index: 1;
+      }
+
+      .flap-left,
+      .flap-right,
+      .flap-bottom {
+        background: linear-gradient(0deg, #284c55, #3c616b);
+        z-index: 6;
+      }
+
+      .flap-left {
+        clip-path: polygon(0 0, 50% 50%, 0 100%);
+      }
+      .flap-right {
+        clip-path: polygon(100% 0, 50% 50%, 100% 100%);
+      }
+      .flap-bottom {
+        clip-path: polygon(0 100%, 0 65%, 50% 45%, 100% 65%, 100% 100%);
+        background: linear-gradient(48deg, #284c55, #30616f);
+        z-index: 7;
+      }
+
+      /* ========== FALL AWAY ========== */
+      .fall .flap-top-wrap,
+      .fall .envelope-body,
+      .fall .flap-left,
+      .fall .flap-right,
+      .fall .flap-bottom {
+        transform: translateY(90px);
+        opacity: 0;
+      }
+
+      /* ================= ZOOM INTO CARD ================= */
+      .zoom {
+        --cam-y: -300px;
+        --cam-scale: 1.5;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="output"></div>
+
+    <script>
+      /* ================= SSN CONFIG ================= */
+      const urlParams = new URLSearchParams(window.location.search);
+      const roomID = urlParams.get("session") || "TESTROOM";
+      const password = urlParams.get("password") || "false";
+      const showtime = parseInt(urlParams.get("showtime") || "300000");
+
+      let currentEnvelope = null;
+      let messageTimeout = null;
+
+      /* ================= ENVELOPE CREATION ================= */
+      function createEnvelope(content) {
+        const env = document.createElement("div");
+        env.className = "container"; // CLOSED by default
+
+        env.innerHTML = `
+          <div class="card">
+            <div class="avatar"></div>
+            <div class="username"></div>
+            <div class="text"></div>
+          </div>
+
+          <div class="flap-top-wrap"><div class="flap-top"></div></div>
+          <div class="envelope-body"></div>
+          <div class="flap-left"></div>
+          <div class="flap-right"></div>
+          <div class="flap-bottom"></div>
+        `;
+
+        env.querySelector(".avatar").style.backgroundImage = `url(${
+          content.chatimg || "./assets/images/unknown.png"
+        })`;
+        env.querySelector(".username").innerHTML = content.chatname || "";
+        env.querySelector(".text").innerHTML = content.chatmessage || "";
+
+        document.getElementById("output").appendChild(env);
+
+        // CLOSED → OPEN → FALL sequence
+        requestAnimationFrame(() => {
+          setTimeout(() => {
+            env.classList.add("open");
+
+            setTimeout(() => {
+              env.classList.add("fall");
+
+              // ZOOM AFTER FALL
+              setTimeout(() => {
+                env.classList.add("zoom");
+              }, 600);
+            }, 800);
+          }, 200);
+        });
+
+        return env;
+      }
+
+      /* ================= MESSAGE HANDLERS ================= */
+      function showMessage(content) {
+        hideMessage(() => {
+          currentEnvelope = createEnvelope(content);
+
+          messageTimeout = setTimeout(() => {
+            hideMessage();
+          }, showtime);
+        });
+      }
+
+      function hideMessage(callback) {
+        if (messageTimeout) {
+          clearTimeout(messageTimeout);
+          messageTimeout = null;
+        }
+
+        if (currentEnvelope) {
+          currentEnvelope.remove();
+          currentEnvelope = null;
+        }
+        if (callback) callback();
+      }
+
+      /* ================= SSN IFRAME ================= */
+      function createIframe() {
+        const iframe = document.createElement("iframe");
+        iframe.src =
+          "https://vdo.socialstream.ninja/?ln&password=" +
+          password +
+          "&scene&novideo&noaudio&cleanoutput&room=" +
+          roomID;
+
+        iframe.style.display = "none";
+        document.body.appendChild(iframe);
+
+        window.addEventListener("message", (e) => {
+          if (e.source !== iframe.contentWindow) return;
+          if (e.data?.dataReceived?.overlayNinja) {
+            console.log(
+              "SSN Overlay Data Received:",
+              e.data.dataReceived.overlayNinja
+            );
+            showMessage(e.data.dataReceived.overlayNinja);
+          }
+        });
+      }
+
+      createIframe();
+    </script>
+  </body>
+</html>
