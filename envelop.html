@@ -183,17 +183,133 @@
       const roomID = urlParams.get("session") || "TESTROOM";
       const password = urlParams.get("password") || "false";
       const showtime = parseInt(urlParams.get("showtime") || "300000");
+      const pseudodock = urlParams.has("autoshow");
 
       let currentEnvelope = null;
       let messageTimeout = null;
 
+      /* ================= SSN IFRAME ================= */
+      function createIframe() {
+        var iframe = document.createElement("iframe");
+
+        if (pseudodock) {
+          // Connect as dock to receive direct messages
+          iframe.src =
+            "https://vdo.socialstream.ninja/?ln&salt=vdo.ninja&password=" +
+            password +
+            "&push&notmobile&label=dock&vd=0&ad=0&novideo&noaudio&autostart&cleanoutput&room=" +
+            roomID;
+        } else {
+          // Standard overlay connection
+          iframe.src =
+            "https://vdo.socialstream.ninja/?ln&password=" +
+            password +
+            "&notmobile&salt=vdo.ninja&label=overlay&exclude=" +
+            roomID +
+            "&scene&novideo&noaudio&cleanoutput&room=" +
+            roomID;
+        }
+
+        iframe.style.width = "0px";
+        iframe.style.height = "0px";
+        iframe.style.position = "fixed";
+        iframe.style.left = "-100px";
+        iframe.style.top = "-100px";
+        iframe.id = "frame1";
+        // iframe.allow = "midi;geolocation;microphone;"; // microphone is needed for Safari webRTC P2P connections
+        document.body.appendChild(iframe);
+
+        var eventMethod = window.addEventListener
+          ? "addEventListener"
+          : "attachEvent";
+        var eventer = window[eventMethod];
+        var messageEvent =
+          eventMethod === "attachEvent" ? "onmessage" : "message";
+
+        eventer(messageEvent, function (e) {
+          if (e.source != iframe.contentWindow) {
+            return;
+          } // reject messages send from other iframes
+
+          if ("dataReceived" in e.data) {
+            // raw data
+            if ("overlayNinja" in e.data.dataReceived) {
+              if (
+                e.data.dataReceived.overlayNinja &&
+                "response" in e.data.dataReceived.overlayNinja
+              ) {
+                // pass
+              } else {
+                // Handle pseudodock format
+                if (
+                  pseudodock &&
+                  e.data.dataReceived.overlayNinja &&
+                  !e.data.dataReceived.overlayNinja.contents
+                ) {
+                  processData({ contents: e.data.dataReceived.overlayNinja });
+                } else {
+                  processData({ contents: e.data.dataReceived.overlayNinja });
+                }
+              }
+            }
+          }
+        });
+      }
+
+      // Process incoming messages
+      function processData(data) {
+        // Handle clear command
+        if (!data || data === false) {
+          hideMessage();
+          return;
+        }
+
+        // Handle different data formats
+        if (data.contents === false) {
+          hideMessage();
+          return;
+        }
+
+        // If data has contents property, use it
+        if (data && data.contents) {
+          showMessage(data.contents);
+        }
+        // If data has content property (from dock)
+        else if (data && "content" in data) {
+          if (data.content) {
+            processData({ contents: data.content });
+          } else {
+            hideMessage();
+          }
+        }
+        // If data has action property
+        else if (data.action && "value" in data && data.action == "content") {
+          if (data.value) {
+            try {
+              const parsed = JSON.parse(data.value);
+              if (parsed && "chatmessage" in parsed) {
+                showMessage(parsed);
+              }
+            } catch (e) {
+              console.error("Error parsing value:", e);
+            }
+          } else {
+            hideMessage();
+          }
+        }
+        // Direct message format
+        else if (data && "chatmessage" in data) {
+          showMessage(data);
+        }
+      }
+
       /* ================= ENVELOPE CREATION ================= */
       function createEnvelope(content) {
         const env = document.createElement("div");
-        env.className = "container"; // CLOSED by default
+        env.className = "container";
 
         env.innerHTML = `
-          <div class="card">
+          <div class="card" id="card">
             <div class="avatar"></div>
             <div class="username"></div>
             <div class="text"></div>
@@ -213,6 +329,18 @@
         env.querySelector(".text").innerHTML = content.chatmessage || "";
 
         document.getElementById("output").appendChild(env);
+
+
+        const cardDiv = document.getElementById("card");
+        console.log("Card Div:", cardDiv);
+
+        // Content image (stickers, etc)
+        if (content.contentimg) {
+          const img = document.createElement("img");
+          img.className = "content-image";
+          img.src = content.contentimg;
+          cardDiv.appendChild(img);
+        }
 
         // CLOSED → OPEN → FALL sequence
         requestAnimationFrame(() => {
@@ -255,30 +383,6 @@
           currentEnvelope = null;
         }
         if (callback) callback();
-      }
-
-      /* ================= SSN IFRAME ================= */
-      function createIframe() {
-        const iframe = document.createElement("iframe");
-        iframe.src =
-          "https://vdo.socialstream.ninja/?ln&password=" +
-          password +
-          "&scene&novideo&noaudio&cleanoutput&room=" +
-          roomID;
-
-        iframe.style.display = "none";
-        document.body.appendChild(iframe);
-
-        window.addEventListener("message", (e) => {
-          if (e.source !== iframe.contentWindow) return;
-          if (e.data?.dataReceived?.overlayNinja) {
-            console.log(
-              "SSN Overlay Data Received:",
-              e.data.dataReceived.overlayNinja
-            );
-            showMessage(e.data.dataReceived.overlayNinja);
-          }
-        });
       }
 
       createIframe();
