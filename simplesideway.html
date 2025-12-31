@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Simple Sideways</title>
+    <style>
+      * {
+        font-family: system-ui, sans-serif;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        max-width: 100%;
+        overflow-x: hidden;
+        height: auto;
+      }
+
+      #chat {
+        display: flex;
+        flex-direction: row;
+        gap: 2%;
+        align-items: flex-start;
+
+        overflow: hidden;
+
+        white-space: nowrap;
+        scroll-behavior: smooth;
+      }
+
+      .msg {
+        flex-shrink: 0;
+        opacity: 0;
+        transform: translateX(120px);
+        transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+          opacity 0.4s ease;
+        will-change: transform, opacity;
+      }
+
+      .msg.visible {
+        opacity: 1;
+        transform: translateX(0);
+      }
+
+      .visible {
+        border: 1px solid whitesmoke;
+        padding: 2%;
+        background-color: #193c47;
+
+        border-left: 5px solid #1fb6ff;
+        border-radius: 10px;
+
+        padding: 14px 18px;
+        max-width: 700px;
+      }
+
+      .msg-content {
+        display: flex;
+        flex-direction: row;
+        max-width: 380px;
+        align-items: center;
+        color: whitesmoke;
+        font-size: 16px;
+      }
+
+      .name {
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 4px;
+      }
+
+      .text {
+        direction: ltr; /* FIX */
+        text-align: left; /* FIX */
+        max-width: 395px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="chat"></div>
+    <script>
+      const MAX_MESSAGES = 10;
+      let count = 0;
+      let messageQueue = [];
+
+      const chat = document.getElementById("chat");
+
+      function addMessage(d) {
+        if (!d.chatname && !d.chatmessage) return;
+
+        const div = document.createElement("div");
+        div.className = "msg";
+
+        // const msgs = chat.querySelectorAll(".msg");
+        // if (count === 0) {
+        //   div.classList.add("left");
+        //   count++;
+        // } else {
+        //   div.classList.add("right");
+        //   count--;
+        // }
+
+        const defaultAvatar =
+          "https://cdn-icons-png.flaticon.com/512/847/847969.png";
+
+        let avatarURL =
+          d.chatimg && d.chatimg !== "undefined" && d.chatimg !== ""
+            ? d.chatimg
+            : defaultAvatar;
+
+        const avatar = `
+              <div class="avatar"
+                  style="background-image:url('${avatarURL}')"
+                  onerror="this.style.backgroundImage='url(${defaultAvatar})'">
+              </div>
+          `;
+
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+
+        div.innerHTML = `
+            <div class="msg-content">
+                <div class="row">
+                    <div class="message-body">
+                        <div class="name">${d.chatname || ""}</div>
+                        <div class="text">${
+                          d.chatmessage.length === 0
+                            ? `<div style="font-style: italic;">is sending you a message...</div>`
+                            : d.chatmessage || ""
+                        }</div>
+                    </div>
+                    <div class="avatar"
+                      style="background-image:url('${avatarURL}')"
+                      onerror="this.style.backgroundImage='url(${defaultAvatar})'">
+                    </div>
+                </div>
+                </div>
+                `;
+        // <div class="time">${timeStr}</div>
+
+        chat.appendChild(div);
+
+        // trigger animation
+        const index = messageQueue.length;
+
+        requestAnimationFrame(() => {
+          div.style.transitionDelay = `${index * 60}ms`; // stagger
+          div.classList.add("visible");
+        });
+
+        // auto scroll to bottom
+        chat.scrollTo({
+          left: chat.scrollWidth,
+          behavior: "smooth",
+        });
+
+        // fade out after 10s
+        // setTimeout(() => div.classList.add("fade-out"), 10000);
+
+        // remove after fade (15s)
+        // setTimeout(() => {
+        //   if (div.parentNode) div.parentNode.removeChild(div);
+        // }, 15000);
+
+        messageQueue.push(div);
+
+        if (messageQueue.length > MAX_MESSAGES) {
+          let old = messageQueue.shift();
+          old.classList.add("fade-out");
+
+          setTimeout(() => {
+            if (old.parentNode) old.remove();
+          }, 0);
+        }
+      }
+
+      // --- Social Stream Ninja Integration ---
+      var urlParams = new URLSearchParams(window.location.search);
+      var roomID = urlParams.get("session") || "iWWnKL28tQ";
+      var password = "false";
+
+      var iframe = document.createElement("iframe");
+      iframe.src =
+        "https://vdo.socialstream.ninja/?ln&salt=vdo.ninja&password=" +
+        password +
+        "&push&label=dock&vd=0&ad=0&novideo&noaudio&autostart&cleanoutput&room=" +
+        roomID;
+      iframe.style = "width:0;height:0;position:fixed;left:-100px;top:-100px;";
+      document.body.appendChild(iframe);
+
+      window.addEventListener("message", (e) => {
+        if (e.source !== iframe.contentWindow) return;
+        const data = e.data?.dataReceived?.overlayNinja;
+        if (data) addMessage(data);
+      });
+
+      // Optional WebSocket listener
+      if (urlParams.has("server")) {
+        const socket = new WebSocket(urlParams.get("server"));
+        socket.onmessage = (e) => {
+          try {
+            addMessage(JSON.parse(e.data));
+          } catch {}
+        };
+      }
+    </script>
+  </body>
+</html>
