@@ -219,32 +219,32 @@
       </div>
     </div>
     <script>
-      const targetDate = new Date();
-      targetDate.setHours(targetDate.getHours() + 5);
+      const params = new URLSearchParams(window.location.search);
+      const MODE = params.get("mode") || "clock"; // clock | countdown
+      const COUNTDOWN_MINUTES = parseInt(params.get("minutes"), 10) || 0;
+
+      let countdownTarget = null;
+
+      if (MODE === "countdown" && COUNTDOWN_MINUTES > 0) {
+        countdownTarget = Date.now() + COUNTDOWN_MINUTES * 60 * 1000;
+      }
 
       function getTimeSegmentElements(segmentElement) {
         const segmentDisplay = segmentElement.querySelector(".segment-display");
-        const segmentDisplayTop = segmentDisplay.querySelector(
-          ".segment-display__top"
-        );
-        const segmentDisplayBottom = segmentDisplay.querySelector(
-          ".segment-display__bottom"
-        );
-
-        const segmentOverlay = segmentDisplay.querySelector(".segment-overlay");
-        const segmentOverlayTop = segmentOverlay.querySelector(
-          ".segment-overlay__top"
-        );
-        const segmentOverlayBottom = segmentOverlay.querySelector(
-          ".segment-overlay__bottom"
-        );
-
         return {
-          segmentDisplayTop,
-          segmentDisplayBottom,
-          segmentOverlay,
-          segmentOverlayTop,
-          segmentOverlayBottom,
+          segmentDisplayTop: segmentDisplay.querySelector(
+            ".segment-display__top"
+          ),
+          segmentDisplayBottom: segmentDisplay.querySelector(
+            ".segment-display__bottom"
+          ),
+          segmentOverlay: segmentDisplay.querySelector(".segment-overlay"),
+          segmentOverlayTop: segmentDisplay.querySelector(
+            ".segment-overlay__top"
+          ),
+          segmentOverlayBottom: segmentDisplay.querySelector(
+            ".segment-overlay__bottom"
+          ),
         };
       }
 
@@ -254,94 +254,79 @@
       }
 
       function updateTimeSegment(segmentElement, timeValue) {
-        const segmentElements = getTimeSegmentElements(segmentElement);
+        const seg = getTimeSegmentElements(segmentElement);
 
-        if (
-          parseInt(segmentElements.segmentDisplayTop.textContent, 10) ===
-          timeValue
-        ) {
+        if (parseInt(seg.segmentDisplayTop.textContent, 10) === timeValue)
           return;
-        }
 
-        segmentElements.segmentOverlay.classList.add("flip");
+        seg.segmentOverlay.classList.add("flip");
 
         updateSegmentValues(
-          segmentElements.segmentDisplayTop,
-          segmentElements.segmentOverlayBottom,
+          seg.segmentDisplayTop,
+          seg.segmentOverlayBottom,
           timeValue
         );
 
         function finishAnimation() {
-          segmentElements.segmentOverlay.classList.remove("flip");
+          seg.segmentOverlay.classList.remove("flip");
           updateSegmentValues(
-            segmentElements.segmentDisplayBottom,
-            segmentElements.segmentOverlayTop,
+            seg.segmentDisplayBottom,
+            seg.segmentOverlayTop,
             timeValue
           );
-
           this.removeEventListener("animationend", finishAnimation);
         }
 
-        segmentElements.segmentOverlay.addEventListener(
-          "animationend",
-          finishAnimation
-        );
+        seg.segmentOverlay.addEventListener("animationend", finishAnimation);
       }
 
       function updateTimeSection(sectionID, timeValue) {
-        const firstNumber = Math.floor(timeValue / 10) || 0;
-        const secondNumber = timeValue % 10 || 0;
-        const sectionElement = document.getElementById(sectionID);
-        const timeSegments = sectionElement.querySelectorAll(".time-segment");
+        const first = Math.floor(timeValue / 10) || 0;
+        const second = timeValue % 10 || 0;
+        const section = document.getElementById(sectionID);
+        const segments = section.querySelectorAll(".time-segment");
 
-        updateTimeSegment(timeSegments[0], firstNumber);
-        updateTimeSegment(timeSegments[1], secondNumber);
+        updateTimeSegment(segments[0], first);
+        updateTimeSegment(segments[1], second);
       }
 
-      function getTimeRemaining(targetDateTime) {
-        const nowTime = Date.now();
-        const complete = nowTime >= targetDateTime;
+      function getTimeRemaining(target) {
+        const now = Date.now();
+        const diff = Math.max(0, target - now);
 
-        if (complete) {
-          return {
-            complete,
-            seconds: 0,
-            minutes: 0,
-            hours: 0,
-          };
-        }
+        const totalSeconds = Math.floor(diff / 1000);
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
 
-        const secondsRemaining = Math.floor((targetDateTime - nowTime) / 1000);
-        const hours = Math.floor(secondsRemaining / 60 / 60);
-        const minutes = Math.floor(secondsRemaining / 60) - hours * 60;
-        const seconds = secondsRemaining % 60;
-
-        return {
-          complete,
-          seconds,
-          minutes,
-          hours,
-        };
+        return { hours, minutes, seconds, done: diff === 0 };
       }
 
       function updateAllSegments() {
-        const d = new Date();
+        if (MODE === "countdown" && countdownTarget) {
+          const t = getTimeRemaining(countdownTarget);
 
-        updateTimeSection("seconds", d.getSeconds());
-        updateTimeSection("minutes", d.getMinutes());
-        updateTimeSection("hours", d.getHours());
+          updateTimeSection("hours", t.hours);
+          updateTimeSection("minutes", t.minutes);
+          updateTimeSection("seconds", t.seconds);
+
+          return t.done;
+        }
+
+        // CLOCK MODE (DEFAULT)
+        const now = new Date();
+        updateTimeSection("hours", now.getHours());
+        updateTimeSection("minutes", now.getMinutes());
+        updateTimeSection("seconds", now.getSeconds());
         return false;
       }
 
-      const countdownTimer = setInterval(() => {
-        const isComplete = updateAllSegments();
-
-        if (isComplete) {
-          clearInterval(countdownTimer);
-        }
-      }, 1000);
-
       updateAllSegments();
+
+      const timer = setInterval(() => {
+        const done = updateAllSegments();
+        if (done) clearInterval(timer);
+      }, 1000);
     </script>
   </body>
 </html>
