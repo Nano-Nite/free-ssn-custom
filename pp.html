@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Pixel Bubble Text</title>
+    <title>Just Profile Picture</title>
     <link
       href="https://fonts.googleapis.com/css2?family=VT323&display=swap"
       rel="stylesheet"
@@ -204,9 +204,11 @@
             };
           }
 
+          wrapper.appendChild(avatar);
+
           const output = document.getElementById("output");
           output.innerHTML = "";
-          output.appendChild(avatar);
+          output.appendChild(wrapper);
 
           // Trigger animation
           requestAnimationFrame(() => {
