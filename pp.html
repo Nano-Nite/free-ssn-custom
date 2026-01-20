@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Pixel Bubble Text</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=VT323&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        background: transparent;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        padding: 30px;
+        font-family: "VT323", monospace;
+      }
+
+      #container {
+        min-width: 100%;
+      }
+
+      .avatar {
+        width: 100%;
+        height: auto;
+        background: whitesmoke;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- <div class="bubble">I LOVE YOUasdjkfh askljdfh skdjlhfjksldahf jklsdah</div> -->
+    <div id="container">
+      <div id="output"></div>
+    </div>
+
+    <script>
+      // Configuration
+      const urlParams = new URLSearchParams(window.location.search);
+      const roomID =
+        urlParams.get("session") ||
+        urlParams.get("room") ||
+        urlParams.get("roomid") ||
+        "TESTROOM";
+      // const style = urlParams.get("style") || "glass";
+      const password =
+        urlParams.get("password") ||
+        urlParams.get("pass") ||
+        urlParams.get("pw") ||
+        "false";
+      const showtime = parseInt(
+        urlParams.get("showtime") || urlParams.get("timer") || "30000"
+      );
+      const pseudodock = urlParams.has("autoshow");
+      // document.body.className = `style-glass`;
+
+      let messageTimeout = null;
+      let currentMessage = null;
+
+      function createIframe() {
+        var iframe = document.createElement("iframe");
+
+        if (pseudodock) {
+          // Connect as dock to receive direct messages
+          iframe.src =
+            "https://vdo.socialstream.ninja/?ln&salt=vdo.ninja&password=" +
+            password +
+            "&push&notmobile&label=dock&vd=0&ad=0&novideo&noaudio&autostart&cleanoutput&room=" +
+            roomID;
+        } else {
+          // Standard overlay connection
+          iframe.src =
+            "https://vdo.socialstream.ninja/?ln&password=" +
+            password +
+            "&notmobile&salt=vdo.ninja&label=overlay&exclude=" +
+            roomID +
+            "&scene&novideo&noaudio&cleanoutput&room=" +
+            roomID;
+        }
+
+        iframe.style.width = "0px";
+        iframe.style.height = "0px";
+        iframe.style.position = "fixed";
+        iframe.style.left = "-100px";
+        iframe.style.top = "-100px";
+        iframe.id = "frame1";
+        // iframe.allow = "midi;geolocation;microphone;"; // microphone is needed for Safari webRTC P2P connections
+        document.body.appendChild(iframe);
+
+        var eventMethod = window.addEventListener
+          ? "addEventListener"
+          : "attachEvent";
+        var eventer = window[eventMethod];
+        var messageEvent =
+          eventMethod === "attachEvent" ? "onmessage" : "message";
+
+        eventer(messageEvent, function (e) {
+          if (e.source != iframe.contentWindow) {
+            return;
+          } // reject messages send from other iframes
+
+          if ("dataReceived" in e.data) {
+            // raw data
+            if ("overlayNinja" in e.data.dataReceived) {
+              if (
+                e.data.dataReceived.overlayNinja &&
+                "response" in e.data.dataReceived.overlayNinja
+              ) {
+                // pass
+              } else {
+                // Handle pseudodock format
+                if (
+                  pseudodock &&
+                  e.data.dataReceived.overlayNinja &&
+                  !e.data.dataReceived.overlayNinja.contents
+                ) {
+                  processData({ contents: e.data.dataReceived.overlayNinja });
+                } else {
+                  processData({ contents: e.data.dataReceived.overlayNinja });
+                }
+              }
+            }
+          }
+        });
+      }
+
+      // Process incoming messages
+      function processData(data) {
+        // Handle clear command
+        if (!data || data === false) {
+          hideMessage();
+          return;
+        }
+
+        // Handle different data formats
+        if (data.contents === false) {
+          hideMessage();
+          return;
+        }
+
+        // If data has contents property, use it
+        if (data && data.contents) {
+          showMessage(data.contents);
+        }
+        // If data has content property (from dock)
+        else if (data && "content" in data) {
+          if (data.content) {
+            processData({ contents: data.content });
+          } else {
+            hideMessage();
+          }
+        }
+        // If data has action property
+        else if (data.action && "value" in data && data.action == "content") {
+          if (data.value) {
+            try {
+              const parsed = JSON.parse(data.value);
+              if (parsed && "chatmessage" in parsed) {
+                showMessage(parsed);
+              }
+            } catch (e) {
+              console.error("Error parsing value:", e);
+            }
+          } else {
+            hideMessage();
+          }
+        }
+        // Direct message format
+        else if (data && "chatmessage" in data) {
+          showMessage(data);
+        }
+      }
+
+      // Display message
+      function showMessage(content) {
+        if (!content.chatmessage && !content.chatname) return;
+
+        hideMessage(() => {
+          const wrapper = document.createElement("div");
+          wrapper.className = "message-wrapper";
+
+          // Avatar
+          const avatar = document.createElement("img");
+          avatar.className = "avatar";
+
+          const fallback = "./assets/images/unknown.png";
+          avatar.src = fallback;
+          if (content.chatimg) {
+            const url =
+              content.chatimg ||
+              content.chatImg ||
+              content.avatar ||
+              content.avatarUrl ||
+              content.user?.avatar ||
+              content.profile?.image ||
+              fallback;
+
+              console.log("Avatar URL:", url);
+            avatar.src = url;
+
+            avatar.onerror = () => {
+              avatar.onerror = null;
+              avatar.src = fallback;
+            };
+          }
+
+          const output = document.getElementById("output");
+          output.innerHTML = "";
+          output.appendChild(avatar);
+
+          // Trigger animation
+          requestAnimationFrame(() => {
+            wrapper.classList.add("show");
+          });
+
+          currentMessage = wrapper;
+
+          // TTS support
+          if (window.initTTS && urlParams.has("tts")) {
+            const ttsText = content.chatmessage
+              ? content.chatmessage.replace(/<[^>]*>/g, "")
+              : "";
+            if (ttsText) {
+              window.speak(content.chatname + " says " + ttsText);
+            }
+          }
+
+          // Auto-hide after showtime
+          // if (messageTimeout) clearTimeout(messageTimeout);
+          // messageTimeout = setTimeout(() => {
+          //   hideMessage();
+          // }, showtime);
+        });
+      }
+
+      // Hide current message
+      function hideMessage(callback) {
+        if (messageTimeout) {
+          clearTimeout(messageTimeout);
+          messageTimeout = null;
+        }
+
+        if (currentMessage) {
+          currentMessage.classList.remove("show");
+          currentMessage.classList.add("hide");
+          setTimeout(() => {
+            if (currentMessage && currentMessage.parentNode) {
+              currentMessage.parentNode.removeChild(currentMessage);
+            }
+            currentMessage = null;
+            if (callback) callback();
+          }, 800); // Increased to match longest animation
+        } else if (callback) {
+          callback();
+        }
+      }
+
+      createIframe();
+
+      function typeText(element, html, speed = 30) {
+        element.innerHTML = "";
+        element.classList.add("typing-cursor");
+
+        // Convert HTML → text safely
+        const temp = document.createElement("div");
+        temp.innerHTML = html;
+        const text = temp.textContent || temp.innerText || "";
+
+        let i = 0;
+
+        function type() {
+          if (i < text.length) {
+            element.textContent += text.charAt(i);
+            i++;
+            setTimeout(type, speed);
+          } else {
+            element.classList.remove("typing-cursor");
+          }
+        }
+
+        type();
+      }
+    </script>
+  </body>
+</html>
