@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<title>Epic Speech</title>
+
+<!-- Google Font (dramatic Japanese-friendly serif) -->
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    width: 100vw;
+    height: 100vh;
+    background: radial-gradient(circle at center, #1a1a1a 0%, #000 70%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Noto Serif JP', serif;
+    color: #e6e6e6;
+    overflow: hidden;
+  }
+
+  .container {
+    max-width: 900px;
+    padding: 40px;
+    text-align: center;
+    animation: fadeIn 3s ease forwards;
+  }
+
+  .line {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: appear 1.5s ease forwards;
+  }
+
+  .line:nth-child(0) { animation-delay: 0s; }
+  .line:nth-child(1) { animation-delay: 1s; }
+  .line:nth-child(2) { animation-delay: 1s; }
+  .line:nth-child(3) { animation-delay: 5s; }
+  .line:nth-child(4) { animation-delay: 5s; }
+  .line:nth-child(5) { animation-delay: 9s; }
+  .line:nth-child(6) { animation-delay: 12s; }
+  .line:nth-child(7) { animation-delay: 13s; }
+  .line:nth-child(8) { animation-delay: 13s; }
+  .line:nth-child(9) { animation-delay: 17s; }
+  .line:nth-child(10) { animation-delay: 17s; }
+  .line:nth-child(11) { animation-delay: 21s; }
+  .line:nth-child(12) { animation-delay: 21s; }
+  .line:nth-child(13) { animation-delay: 21s; }
+  .line:nth-child(14) { animation-delay: 21s; }
+  .line:nth-child(15) { animation-delay: 21s; }
+  /* .shout { animation-delay: 10s; } */
+
+  .break {
+    height: 20px;
+  }
+
+  .shout {
+    font-size: 2.4rem;
+    font-weight: 700;
+    margin-top: 30px;
+    color: #ff3b3b;
+    text-shadow:
+      0 0 10px rgba(255, 60, 60, 0.6),
+      0 0 30px rgba(255, 60, 60, 0.4);
+  }
+
+  @keyframes appear {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes shout {
+    from {
+      transform: scale(1);
+      text-shadow:
+        0 0 10px rgba(255, 60, 60, 0.6),
+        0 0 30px rgba(255, 60, 60, 0.4);
+    }
+    to {
+      transform: scale(1.05);
+      text-shadow:
+        0 0 20px rgba(255, 60, 60, 0.9),
+        0 0 60px rgba(255, 60, 60, 0.7);
+    }
+  }
+</style>
+</head>
+
+<body>
+  <div class="container">
+
+    <div class="line">
+      まったくその通りだ。まったくもって無意味だ。<br>
+      人はいずれ死ぬ。
+    </div>
+
+    <div class="break"></div>
+
+    <div class="line">
+      ならば人生には意味がないのか？<br>
+      生まれてきたことに意味はなかったのか？
+    </div>
+
+    <div class="break"></div>
+
+    <div class="line">
+      あの兵士たちは無意味だったのか？<br>
+      <div class="shout">いや、違う！</div>
+    </div>
+
+    <div class="break"></div>
+
+    <div class="line">
+      あの兵士たちに意味を与えるのは我々だ！<br>
+      想うことができるのは、生者である我々だ！
+    </div>
+
+    <div class="break"></div>
+
+    <div class="line">
+      我々はここで死に、次の生者に意味を託す！<br>
+      それこそ唯一、この残酷な世界に抗う術なのだ！
+    </div>
+
+    <div class="break"></div>
+    <div class="line shout">
+      兵士よ、行け！
+    </div>
+
+    <div class="break"></div>
+    <div class="line shout">
+      兵士よ、叫べ！
+    </div>
+
+    <div class="break"></div>
+    <div class="line shout">
+      兵士よ、戦え！
+    </div>
+
+  </div>
+</body>
+</html>
