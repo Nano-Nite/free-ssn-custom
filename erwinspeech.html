@@ -155,19 +155,16 @@
         opacity: 0;
         pointer-events: none;
       }
-
-      #yt-audio iframe {
-        position: fixed;
-        width: 1px;
-        height: 1px;
-        opacity: 0;
-        pointer-events: none;
-      }
     </style>
   </head>
 
   <body>
-    <div id="yt-audio"></div>
+    <iframe
+      id="bg-audio"
+      src="https://www.youtube.com/embed/rRjwqjcMC3k?autoplay=1&mute=1&loop=1&playlist=rRjwqjcMC3k&controls=0&showinfo=0&rel=0"
+      frameborder="0"
+      allow="autoplay"
+    ></iframe>
 
     <div class="container">
       <div class="line">
@@ -214,35 +211,25 @@
     </div>
 
     <script>
-      function loadYouTubeAudio() {
-        const container = document.getElementById("yt-audio");
+      const container = document.querySelector(".container");
+      const iframe = document.getElementById("bg-audio");
 
-        const iframe = document.createElement("iframe");
-        iframe.src =
-          "https://www.youtube.com/embed/rRjwqjcMC3k" +
-          "?autoplay=1" +
-          "&mute=1" +
-          "&loop=1" +
-          "&playlist=rRjwqjcMC3k" +
-          "&controls=0" +
-          "&rel=0";
+      const TOTAL_ANIMATION_TIME = 23000;
+      const LOOP_DELAY = 5000;
 
-        iframe.allow = "autoplay";
-        iframe.frameBorder = "0";
+      function restartAnimation() {
+        // reset text animation
+        container.classList.add("no-anim");
+        void container.offsetWidth;
+        container.classList.remove("no-anim");
 
-        container.appendChild(iframe);
+        // restart youtube audio
+        iframe.src = iframe.src;
       }
 
-      // delay slightly to avoid autoplay block
-      window.addEventListener("load", () => {
-        setTimeout(loadYouTubeAudio, 500);
-      });
-
-      document.body.addEventListener("click", () => {
-        document.querySelector("iframe").src = document
-          .querySelector("iframe")
-          .src.replace("mute=1", "mute=0");
-      });
+      setInterval(() => {
+        restartAnimation();
+      }, TOTAL_ANIMATION_TIME + LOOP_DELAY);
     </script>
   </body>
 </html>
