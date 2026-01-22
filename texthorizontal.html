@@ -18,7 +18,7 @@
 
       #chat {
         display: flex;
-        flex-direction: row;
+        /* flex-direction: row; */
         gap: 20px;
         align-items: flex-start;
 
@@ -63,6 +63,7 @@
   <body>
     <div id="chat"></div>
     <script>
+    
       function nameToColor(name) {
         let hash = 0;
         for (let i = 0; i < name.length; i++) {
@@ -87,11 +88,15 @@
         return `hsl(${Math.random() * 360}, 80%, 60%)`;
       }
 
-      const MAX_MESSAGES = 10;
+      const MAX_MESSAGES = 12;
       let count = 0;
       let messageQueue = [];
 
       const chat = document.getElementById("chat");
+
+      const dir = new URLSearchParams(location.search).get("dir");
+      chat.style.flexDirection = dir === "column" ? "column" : "row";
+
 
       function addMessage(d) {
         if (!d.chatname && !d.chatmessage) return;
