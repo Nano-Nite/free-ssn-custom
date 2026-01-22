@@ -1,0 +1,180 @@
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Text Horizontal</title>
+    <style>
+      * {
+        font-family: system-ui, sans-serif;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        margin-right: 55px;
+        /* max-width: 100%; */
+        overflow: hidden;
+        height: auto;
+      }
+
+      #chat {
+        display: flex;
+        flex-direction: row;
+        gap: 20px;
+        align-items: flex-start;
+
+        overflow: hidden;
+
+        scroll-behavior: smooth;
+      }
+
+      .msg {
+        opacity: 0;
+        transform: translateX(20px);
+        transition:
+          transform 0.1s cubic-bezier(0.22, 1, 0.36, 1),
+          opacity 0.1s ease;
+        will-change: transform, opacity;
+      }
+
+      .msg.visible {
+        opacity: 1;
+        transform: translateX(0);
+        /* min-width: 300px; */
+      }
+
+      .text {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+
+      .visible {
+        max-width: 500px;
+      }
+
+      .chatname {
+        font-weight: 700;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="chat"></div>
+    <script>
+      function nameToColor(name) {
+        let hash = 0;
+        for (let i = 0; i < name.length; i++) {
+          hash = name.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        const hue = Math.abs(hash) % 360;
+        return `hsl(${hue}, 75%, 60%)`;
+      }
+
+      function stripImages(html) {
+        if (!html) return "";
+        const div = document.createElement("div");
+        div.innerHTML = html;
+
+        // remove ALL images
+        div.querySelectorAll("img").forEach((img) => img.remove());
+
+        return div.textContent || div.innerText || "";
+      }
+
+      function randomColor() {
+        return `hsl(${Math.random() * 360}, 80%, 60%)`;
+      }
+
+      const MAX_MESSAGES = 10;
+      let count = 0;
+      let messageQueue = [];
+
+      const chat = document.getElementById("chat");
+
+      function addMessage(d) {
+        if (!d.chatname && !d.chatmessage) return;
+
+        const div = document.createElement("div");
+        div.className = "msg";
+
+        const cleanMessage = stripImages(d.chatmessage);
+        const nameColor = randomColor();
+
+        div.innerHTML = `
+        <div class="msg-content">
+            <div class="text">
+            <span class="chatname" style="color:${nameColor}">
+                ${d.chatname}
+            </span>
+            ${cleanMessage.length ? " " + cleanMessage : " is sending you a message"}
+            </div>
+        </div>
+        `;
+
+        chat.appendChild(div);
+
+        // trigger animation
+        const index = messageQueue.length;
+
+        requestAnimationFrame(() => {
+          //   div.style.transitionDelay = `${index * 60}ms`; // stagger
+          div.classList.add("visible");
+        });
+
+        // auto scroll to bottom
+        chat.scrollTo({
+          left: chat.scrollWidth,
+          behavior: "smooth",
+        });
+
+        // fade out after 10s
+        // setTimeout(() => div.classList.add("fade-out"), 10000);
+
+        // remove after fade (15s)
+        // setTimeout(() => {
+        //   if (div.parentNode) div.parentNode.removeChild(div);
+        // }, 15000);
+
+        messageQueue.push(div);
+
+        if (messageQueue.length > MAX_MESSAGES) {
+          let old = messageQueue.shift();
+          old.classList.add("fade-out");
+
+          setTimeout(() => {
+            if (old.parentNode) old.remove();
+          }, 0);
+        }
+      }
+
+      // --- Social Stream Ninja Integration ---
+      var urlParams = new URLSearchParams(window.location.search);
+      var roomID = urlParams.get("session") || "iWWnKL28tQ";
+      var password = "false";
+
+      var iframe = document.createElement("iframe");
+      iframe.src =
+        "https://vdo.socialstream.ninja/?ln&salt=vdo.ninja&password=" +
+        password +
+        "&push&label=dock&vd=0&ad=0&novideo&noaudio&autostart&cleanoutput&room=" +
+        roomID;
+      iframe.style = "width:0;height:0;position:fixed;left:-100px;top:-100px;";
+      document.body.appendChild(iframe);
+
+      window.addEventListener("message", (e) => {
+        if (e.source !== iframe.contentWindow) return;
+        const data = e.data?.dataReceived?.overlayNinja;
+        if (data) addMessage(data);
+      });
+
+      // Optional WebSocket listener
+      if (urlParams.has("server")) {
+        const socket = new WebSocket(urlParams.get("server"));
+        socket.onmessage = (e) => {
+          try {
+            addMessage(JSON.parse(e.data));
+          } catch {}
+        };
+      }
+    </script>
+  </body>
+</html>
