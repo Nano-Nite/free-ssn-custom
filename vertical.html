@@ -77,19 +77,18 @@
 
       .message-wrapper {
         opacity: 0;
-        transform: translateX(-50%) scale(0.95) translateY(20px);
-        /* filter: blur(10px); */
-        transition:
-          opacity 0.8s ease,
-          transform 0.8s ease,
-          filter 0.8s ease;
-
         position: absolute;
         left: 50%;
         bottom: 0;
         width: 100%;
         max-width: 350px;
         margin-bottom: 1%;
+
+        transform: translateX(-50%) scale(0.95) translateY(20px);
+        transition:
+          opacity 0.8s ease,
+          transform 0.8s ease,
+          filter 0.8s ease;
       }
 
       .message-wrapper.show {

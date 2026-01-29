@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -9,7 +9,6 @@
       href="https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap"
       rel="stylesheet"
     />
-
     <link
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
       rel="stylesheet"
@@ -34,10 +33,6 @@
           format("woff");
       }
 
-      /* #output {
-        min-height: 100px;
-      } */
-
       * {
         margin: 0;
         padding: 0;
@@ -45,19 +40,17 @@
         font-style: normal;
       }
 
-      body, html {
+      body,
+      html {
         font-family: "San Francisco", sans-serif;
         -webkit-font-smoothing: antialiased;
         margin: 0;
         padding: 0;
         width: auto;
         height: auto;
-        /* display: flex; */
-        /* align-items: center; */
-        /* justify-content: center; */
-        /* background: url("https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=3840&q=80")
-          center/cover no-repeat; */
-        background: transparent;
+        background: url("https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=3840&q=80");
+        background-position: center;
+        background-repeat: no-repeat;
         backdrop-filter: none;
         overflow: hidden;
       }
@@ -80,146 +73,127 @@
         max-width: 800px;
       }
 
-      .style-glass .message-wrapper {
-        /* border-radius: 70px; */
-        /* border: 3px solid rgba(255, 255, 255, 0.18); */
+      .message-wrapper {
+        opacity: 0;
+        position: absolute;
+        left: 50%;
+        bottom: 0;
+        width: 100%;
+        max-width: 350px;
+        margin-bottom: 1%;
+
+        transform: translateX(-50%) scale(0.95) translateY(20px);
+        transition:
+          opacity 0.8s ease,
+          transform 0.8s ease,
+          filter 0.8s ease;
       }
 
       .message-wrapper.show {
         opacity: 1;
-        /* transform: translateY(0px); */
-        /* margin: 0 2%; */
         display: flex;
         flex-direction: column-reverse;
         align-items: anchor-center;
-        /* background: #353535; */
         position: absolute;
         left: 50%;
         bottom: 0;
         transform: translateX(-50%);
         width: 100%;
         max-width: 350px;
-        /* padding: 0 20px; */
         box-sizing: border-box;
-        /* border-radius: 2%; */
         margin-bottom: 1%;
         gap: 15px;
+
+        transform: translateX(-50%) scale(1) translateY(0);
       }
 
       .message-wrapper.hide {
-        opacity: 0;
-        transform: scale(1.1) translateY(-20px);
-        filter: blur(10px);
+        opacity: 1;
+        display: flex;
+        flex-direction: column-reverse;
+        align-items: anchor-center;
+        position: absolute;
+        left: 50%;
+        bottom: 0;
+        transform: translateX(-50%);
+        width: 100%;
+        max-width: 350px;
+        box-sizing: border-box;
+        margin-bottom: 1%;
+        gap: 15px;
+
+        transform: translateX(-50%) scale(1.1) translateY(-20px);
       }
 
       .avatar {
         width: 100%;
-        height: auto;
-        object-fit: cover;
-        flex-shrink: 0;
-        /* margin-left: 2%; */
-        /* border: 2px solid #000; */
-        /* box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px; */
-        /* margin:2%; */
-        background: whitesmoke;
-        /* border: 7px solid #353535; */
+        aspect-ratio: 1 / 1;
+        padding: 10px;
         border-radius: 50%;
-        /* z-index: 99; */
-        /* position: absolute; */
-        /* bottom: 91%; */
+        background: linear-gradient(135deg, #2979ff, #00e5ff, #00c853);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+      }
+
+      .avatar img {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+        background: #000;
+        padding: 10px;
+      }
+
+      .avatar::after {
+        content: "";
+        position: absolute;
+        bottom: 6px;
+        right: 25px;
+        width: 75px;
+        height: 75px;
+        background: #00e676;
+        border: 10px solid #000;
+        border-radius: 50%;
       }
 
       .message {
         display: grid;
         align-items: center;
         gap: 30px;
-        position: relative;
-        padding: 0;
-        /* z-index: 99; */
-        /* backdrop-filter: blur(2px); */
-        /* margin: 0% 0%; */
+        padding: 28px;
         background: #353535;
         border-radius: 30px;
-        position: relative;
         overflow: hidden;
-        padding: 28px;
         margin-top: -4%;
         max-width: 160%;
       }
 
       .footer {
-        display: inline-flex;
+        display: flex;
+        flex-direction: column;
         align-items: center;
         gap: 10px;
-        position: relative;
-        padding: 0;
-        /* z-index: 99; */
-        /* backdrop-filter: blur(2px); */
-        /* margin: 3%; */
-        /* background: goldenrod; */
-        /* border-radius: 0 0 25px 25px; */
-        position: relative;
-        overflow: hidden;
         padding: 2% 5%;
-        /* margin-top: -1%; */
         justify-content: center;
         width: max-content;
       }
 
+      .footer-badges {
+        display: flex;
+        gap: 8px;
+      }
+
       .username {
-        /* font-weight: 500; */
         font-size: 40px;
         display: flex;
         align-items: center;
         gap: 8px;
         font-weight: bolder;
-        /* font-size: x-large; */
-        /* margin-bottom: 1%; */
-        /* border: 1px solid #181818; */
-        /* border-radius: 60px; */
-        /* background: #fff; */
         color: white !important;
-        /* padding: 2%; */
-        /* position: absolute; */
-        /* top: 2%; */
-        /* left: 15%; */
-        /* z-index: 99; */
-        /* box-shadow: rgba(0, 0, 0, 0.35) 0px 3px 10px; */
-        /* align-items: center; */
         overflow-wrap: anywhere;
-        /* text-shadow: 0 5px 4px rgba(0, 0, 0, 0.3); */
       }
-
-      .text {
-        color: #fff !important;
-        /* text-shadow: 0 5px 4px rgba(0, 0, 0, 0.3); */
-        font-size: x-large;
-        font-weight: 500;
-      }
-
-      /* Tail */
-      /* .style-glass .message-wrapper::after {
-        content: "";
-        position: absolute;
-        bottom: 40%;
-        left: 3.1%;
-        width: 0;
-        height: 0;
-        border-left: 24px solid transparent;
-        border-right: 0px solid #1f8aff;
-        border-bottom: 44px solid #1f8aff;
-      }
-      .style-glass .message-wrapper::before {
-        content: "";
-        position: absolute;
-        bottom: 40%;
-        left: 5.1%;
-        width: 0;
-        height: 0;
-        border-left: 6px solid transparent;
-        border-right: 22px solid transparent;
-        border-top: 41px solid #1f8aff;
-      } */
 
       .texture {
         position: absolute;
@@ -227,7 +201,7 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
-        mix-blend-mode: screen; /* TikTok-safe */
+        mix-blend-mode: screen;
         opacity: 0.6;
         pointer-events: none;
       }
@@ -237,17 +211,16 @@
       }
 
       .source-icon {
-        width: 25px;
+        width: 35px;
         height: auto;
-        opacity: 0.7;
       }
 
       .text {
-        font-size: 35px;
-        line-height: 1;
+        font-size: 31px;
         word-wrap: break-word;
         line-height: 45px;
-        margin-top: 20px;
+        color: #fff !important;
+        font-weight: 500;
       }
 
       .text img,
@@ -274,15 +247,12 @@
         display: flex;
         gap: 4px;
         align-items: center;
-        /* height: 18px; */
-        /* position: absolute; */
-        z-index: 99;
         top: 0;
       }
 
       .badge {
-        height: 20px !important;
-        width: 20px !important;
+        height: auto;
+        width: 35px !important;
       }
 
       .donation-info {
@@ -291,11 +261,11 @@
         gap: 8px;
         padding: 4px 12px;
         border-radius: 20px;
-        font-size: 14px;
+        font-size: 20px;
         font-weight: 600;
         margin-top: 8px;
         margin-bottom: 8px;
-        background: #244e1c;
+        background: goldenrod;
         color: #fff;
         border: 1px solid #244e1c;
       }
@@ -315,25 +285,6 @@
         margin-top: 12px;
         border-radius: 8px;
       }
-
-      /* @media (max-width: 600px) {
-        .message {
-          padding: 16px;
-        }
-
-        .avatar {
-          width: 48px;
-          height: 48px;
-        }
-
-        .username {
-          font-size: 16px;
-        }
-
-        .text {
-          font-size: 18px;
-        }
-      } */
     </style>
   </head>
   <body>
@@ -343,24 +294,21 @@
 
     <script src="./assets/js/tts.js"></script>
     <script>
-      // Configuration
       const urlParams = new URLSearchParams(window.location.search);
       const roomID =
         urlParams.get("session") ||
         urlParams.get("room") ||
         urlParams.get("roomid") ||
         "TESTROOM";
-      // const style = urlParams.get("style") || "glass";
       const password =
         urlParams.get("password") ||
         urlParams.get("pass") ||
         urlParams.get("pw") ||
         "false";
       const showtime = parseInt(
-        urlParams.get("showtime") || urlParams.get("timer") || "30000"
+        urlParams.get("showtime") || urlParams.get("timer") || "30000",
       );
       const pseudodock = urlParams.has("autoshow");
-      // document.body.className = `style-glass`;
 
       let messageTimeout = null;
       let currentMessage = null;
@@ -369,14 +317,12 @@
         var iframe = document.createElement("iframe");
 
         if (pseudodock) {
-          // Connect as dock to receive direct messages
           iframe.src =
             "https://vdo.socialstream.ninja/?ln&salt=vdo.ninja&password=" +
             password +
             "&push&notmobile&label=dock&vd=0&ad=0&novideo&noaudio&autostart&cleanoutput&room=" +
             roomID;
         } else {
-          // Standard overlay connection
           iframe.src =
             "https://vdo.socialstream.ninja/?ln&password=" +
             password +
@@ -392,7 +338,6 @@
         iframe.style.left = "-100px";
         iframe.style.top = "-100px";
         iframe.id = "frame1";
-        // iframe.allow = "midi;geolocation;microphone;"; // microphone is needed for Safari webRTC P2P connections
         document.body.appendChild(iframe);
 
         var eventMethod = window.addEventListener
@@ -403,83 +348,59 @@
           eventMethod === "attachEvent" ? "onmessage" : "message";
 
         eventer(messageEvent, function (e) {
-          if (e.source != iframe.contentWindow) {
-            return;
-          } // reject messages send from other iframes
+          if (e.source != iframe.contentWindow) return;
 
           if ("dataReceived" in e.data) {
-            // raw data
             if ("overlayNinja" in e.data.dataReceived) {
               if (
                 e.data.dataReceived.overlayNinja &&
                 "response" in e.data.dataReceived.overlayNinja
               ) {
-                // pass
               } else {
-                // Handle pseudodock format
-                if (
-                  pseudodock &&
-                  e.data.dataReceived.overlayNinja &&
-                  !e.data.dataReceived.overlayNinja.contents
-                ) {
-                  processData({ contents: e.data.dataReceived.overlayNinja });
-                } else {
-                  processData({ contents: e.data.dataReceived.overlayNinja });
-                }
+                processData({
+                  contents: e.data.dataReceived.overlayNinja,
+                });
               }
             }
           }
         });
       }
 
-      // Process incoming messages
       function processData(data) {
-        // Handle clear command
         if (!data || data === false) {
           hideMessage();
           return;
         }
 
-        // Handle different data formats
         if (data.contents === false) {
           hideMessage();
           return;
         }
 
-        // If data has contents property, use it
         if (data && data.contents) {
           showMessage(data.contents);
-        }
-        // If data has content property (from dock)
-        else if (data && "content" in data) {
+        } else if (data && "content" in data) {
           if (data.content) {
             processData({ contents: data.content });
           } else {
             hideMessage();
           }
-        }
-        // If data has action property
-        else if (data.action && "value" in data && data.action == "content") {
+        } else if (data.action && "value" in data && data.action == "content") {
           if (data.value) {
             try {
               const parsed = JSON.parse(data.value);
               if (parsed && "chatmessage" in parsed) {
                 showMessage(parsed);
               }
-            } catch (e) {
-              console.error("Error parsing value:", e);
-            }
+            } catch (e) {}
           } else {
             hideMessage();
           }
-        }
-        // Direct message format
-        else if (data && "chatmessage" in data) {
+        } else if (data && "chatmessage" in data) {
           showMessage(data);
         }
       }
 
-      // Display message
       function showMessage(content) {
         if (!content.chatmessage && !content.chatname) return;
 
@@ -490,14 +411,15 @@
           const message = document.createElement("div");
           message.className = "message";
 
-          // Avatar
-          const avatar = document.createElement("img");
-          avatar.className = "avatar";
-
           const fallback = "./assets/images/unknown.png";
-          avatar.src = fallback;
+          const avatarWrapper = document.createElement("div");
+          avatarWrapper.className = "avatar";
+
+          const avatarImg = document.createElement("img");
+          avatarImg.src = fallback;
+
           if (content.chatimg) {
-            const url =
+            avatarImg.src =
               content.chatimg ||
               content.chatImg ||
               content.avatar ||
@@ -506,21 +428,17 @@
               content.profile?.image ||
               fallback;
 
-            avatar.src = url;
-
-            avatar.onerror = () => {
-              avatar.onerror = null;
-              avatar.src = fallback;
+            avatarImg.onerror = () => {
+              avatarImg.onerror = null;
+              avatarImg.src = fallback;
             };
           }
-          
+
+          avatarWrapper.appendChild(avatarImg);
 
           const contentDiv = document.createElement("div");
           contentDiv.className = "message-content";
 
-          // message.appendChild(header);
-
-          // Donation/Membership info
           if (content.hasDonation || content.membership) {
             const donationDiv = document.createElement("div");
             donationDiv.className = "donation-info";
@@ -528,17 +446,15 @@
               donationDiv.textContent = content.title
                 ? `${content.title}: ${content.hasDonation}`
                 : content.hasDonation;
-            } else if (content.membership) {
+            } else {
               donationDiv.textContent =
                 typeof content.membership === "string"
                   ? content.membership
                   : "Member";
             }
-
             contentDiv.appendChild(donationDiv);
           }
 
-          // Content image (stickers, etc)
           if (content.contentimg) {
             const img = document.createElement("img");
             img.className = "content-image";
@@ -546,11 +462,12 @@
             contentDiv.appendChild(img);
           }
 
-          // footer
           const footerDiv = document.createElement("div");
           footerDiv.className = "footer";
 
-          // Source icon
+          const footerBadgesDiv = document.createElement("div");
+          footerBadgesDiv.className = "footer-badges";
+
           if (content.type) {
             const sourceIcon = document.createElement("img");
             sourceIcon.className = "source-icon";
@@ -558,43 +475,30 @@
             sourceIcon.onerror = () => {
               sourceIcon.style.display = "none";
             };
-            footerDiv.appendChild(sourceIcon);
+            footerBadgesDiv.appendChild(sourceIcon);
           }
 
-          // username and badges
           const header = document.createElement("div");
           header.className = "username";
 
           if (content.chatname) {
             const name = document.createElement("span");
             name.innerHTML = content.chatname;
-            // if (content.nameColor) {
-            //   name.style.color = content.nameColor;
-            // }
             header.appendChild(name);
           }
 
-          // Badges
           if (content.chatbadges && Array.isArray(content.chatbadges)) {
             const badges = document.createElement("div");
             badges.className = "badges";
             content.chatbadges.forEach((badge) => {
-              if (typeof badge === "string") {
-                const img = document.createElement("img");
-                img.className = "badge";
-                img.src = badge;
-                badges.appendChild(img);
-              } else if (badge.src) {
-                const img = document.createElement("img");
-                img.className = "badge";
-                img.src = badge.src;
-                badges.appendChild(img);
-              }
+              const img = document.createElement("img");
+              img.className = "badge";
+              img.src = typeof badge === "string" ? badge : badge.src;
+              badges.appendChild(img);
             });
-            contentDiv.appendChild(badges);
+            footerBadgesDiv.appendChild(badges);
           }
 
-          // Message text
           if (content.chatmessage) {
             const text = document.createElement("div");
             text.className = "text";
@@ -605,9 +509,11 @@
             contentDiv.appendChild(text);
           }
 
+          footerDiv.appendChild(footerBadgesDiv);
           footerDiv.appendChild(header);
+
           wrapper.appendChild(footerDiv);
-          wrapper.appendChild(avatar);
+          wrapper.appendChild(avatarWrapper);
           message.appendChild(contentDiv);
           wrapper.appendChild(message);
 
@@ -615,14 +521,18 @@
           output.innerHTML = "";
           output.appendChild(wrapper);
 
-          // Trigger animation
+          wrapper.classList.add("hide");
+          wrapper.offsetHeight; 
+
+          wrapper.classList.remove("hide");
+          wrapper.classList.add("show");
+
           requestAnimationFrame(() => {
             wrapper.classList.add("show");
           });
 
           currentMessage = wrapper;
 
-          // TTS support
           if (window.initTTS && urlParams.has("tts")) {
             const ttsText = content.chatmessage
               ? content.chatmessage.replace(/<[^>]*>/g, "")
@@ -631,16 +541,9 @@
               window.speak(content.chatname + " says " + ttsText);
             }
           }
-
-          // Auto-hide after showtime
-          // if (messageTimeout) clearTimeout(messageTimeout);
-          // messageTimeout = setTimeout(() => {
-          //   hideMessage();
-          // }, showtime);
         });
       }
 
-      // Hide current message
       function hideMessage(callback) {
         if (messageTimeout) {
           clearTimeout(messageTimeout);
@@ -651,12 +554,12 @@
           currentMessage.classList.remove("show");
           currentMessage.classList.add("hide");
           setTimeout(() => {
-            if (currentMessage && currentMessage.parentNode) {
+            if (currentMessage?.parentNode) {
               currentMessage.parentNode.removeChild(currentMessage);
             }
             currentMessage = null;
             if (callback) callback();
-          }, 800); // Increased to match longest animation
+          }, 800);
         } else if (callback) {
           callback();
         }
