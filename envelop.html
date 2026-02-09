@@ -383,30 +383,9 @@
           clearTimeout(messageTimeout);
           messageTimeout = null;
         }
-
         if (currentEnvelope) {
-          // currentEnvelope.remove();
-          // currentEnvelope = null;
-
-          // CLOSED → OPEN → FALL sequence
-          requestAnimationFrame(() => {
-            // ZOOM AFTER FALL
-            setTimeout(() => {
-              // currentEnvelope.classList.remove("open", "fall", "zoom");
-              currentEnvelope.classList.remove("zoom");
-
-              setTimeout(() => {
-                currentEnvelope.classList.remove("fall");
-                setTimeout(() => {
-                  currentEnvelope.classList.remove("open");
-                  setTimeout(() => {
-                    currentEnvelope.remove();
-                    currentEnvelope = null;
-                  }, 800);
-                }, 600);
-              }, 400);
-            }, 200);
-          });
+          currentEnvelope.remove();
+          currentEnvelope = null;
         }
         if (callback) callback();
       }
