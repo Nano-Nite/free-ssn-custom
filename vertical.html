@@ -279,7 +279,6 @@
 
     <script src="./assets/js/tts.js"></script>
     <script>
-      // Configuration
       const urlParams = new URLSearchParams(window.location.search);
       const roomID =
         urlParams.get("session") ||
@@ -322,7 +321,6 @@
         iframe.style.left = "-100px";
         iframe.style.top = "-100px";
         iframe.id = "frame1";
-        // iframe.allow = "midi;geolocation;microphone;"; // microphone is needed for Safari webRTC P2P connections
         document.body.appendChild(iframe);
 
         var eventMethod = window.addEventListener
@@ -343,7 +341,6 @@
                 e.data.dataReceived.overlayNinja &&
                 "response" in e.data.dataReceived.overlayNinja
               ) {
-                // pass
               } else {
                 if (
                   pseudodock &&
@@ -397,7 +394,6 @@
         }
       }
 
-      // Display message
       function showMessage(content) {
         if (!content.chatmessage && !content.chatname) return;
 
@@ -478,9 +474,9 @@
           if (content.chatname) {
             const name = document.createElement("span");
             name.innerHTML = content.chatname;
-            // if (content.nameColor) {
-            //   name.style.color = content.nameColor;
-            // }
+            /* if (content.nameColor) {
+               name.style.color = content.nameColor;
+            }*/
             header.appendChild(name);
           }
 

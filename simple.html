@@ -91,7 +91,7 @@
 
         opacity: 0;
         transform: translateY(40px) scale(0.96);
-        filter: blur(8px);
+        /* filter: blur(8px); */
 
         transition:
           opacity 0.6s ease,
@@ -229,10 +229,6 @@
         display: none;
       }
 
-      .message-wrapper.show {
-        opacity: 1 !important;
-      }
-
       .content-image {
         max-width: 300px;
         max-height: 300px;
@@ -307,9 +303,7 @@
         urlParams.get("pass") ||
         urlParams.get("pw") ||
         "false";
-      const showtime = parseInt(
-        urlParams.get("showtime") || urlParams.get("timer") || "30000",
-      );
+      const showtime = 10000;
       const pseudodock = urlParams.has("autoshow");
       document.body.className = `style-${style}`;
 
@@ -580,10 +574,10 @@
           }
 
           // Auto-hide after showtime
-          // if (messageTimeout) clearTimeout(messageTimeout);
-          // messageTimeout = setTimeout(() => {
-          //   hideMessage();
-          // }, showtime);
+          if (messageTimeout) clearTimeout(messageTimeout);
+          messageTimeout = setTimeout(() => {
+            hideMessage();
+          }, showtime);
         });
       }
 
