@@ -1,0 +1,577 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Status</title>
+    <link rel="icon" href="../assets/icons/favicon.ico" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --apple-heading: 600;
+        --apple-body: 400;
+      }
+
+      @font-face {
+        font-family: NotoColorEmojiLimited;
+        unicode-range: U+1F1E6-1F1FF;
+        src: local("Noto Color Emoji");
+      }
+
+      @font-face {
+        font-family: "San Francisco";
+        font-weight: 400;
+        src: url("../assets/fonts/sanfranciscodisplay-regular-webfont.woff")
+          format("woff");
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-style: normal;
+      }
+
+      body,
+      html {
+        font-family: "San Francisco", sans-serif;
+        -webkit-font-smoothing: antialiased;
+        margin: 0;
+        padding: 0;
+        width: auto;
+        height: auto;
+        /* background: url("https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=3840&q=80");
+        background-position: center;
+        background-repeat: no-repeat;
+        backdrop-filter: none; */
+        background: transparent;
+        overflow: hidden;
+      }
+
+      .content {
+        font-weight: var(--apple-heading);
+        font-size: 21px;
+        letter-spacing: -0.015em;
+      }
+
+      .info {
+        font-weight: var(--apple-body);
+        font-size: 17px;
+        letter-spacing: -0.01em;
+        line-height: 1.4;
+      }
+
+      #container {
+        width: 100%;
+        max-width: 800px;
+      }
+
+      .message-wrapper {
+        opacity: 0;
+        position: absolute;
+        left: 50%;
+        bottom: 0;
+        width: 100%;
+        max-width: 350px;
+        margin-bottom: 1%;
+
+        transform: translateX(-50%) scale(0.95) translateY(20px);
+        transition:
+          opacity 0.8s ease,
+          transform 0.8s ease,
+          filter 0.8s ease;
+      }
+
+      .message-wrapper.show {
+        opacity: 1;
+        display: flex;
+        flex-direction: column-reverse;
+        align-items: anchor-center;
+        position: absolute;
+        left: 50%;
+        bottom: 0;
+        transform: translateX(-50%);
+        width: 100%;
+        max-width: 350px;
+        box-sizing: border-box;
+        margin-bottom: 1%;
+        gap: 15px;
+
+        transform: translateX(-50%) scale(1) translateY(0);
+      }
+
+      .message-wrapper.hide {
+        opacity: 1;
+        display: flex;
+        flex-direction: column-reverse;
+        align-items: anchor-center;
+        position: absolute;
+        left: 50%;
+        bottom: 0;
+        transform: translateX(-50%);
+        width: 100%;
+        max-width: 350px;
+        box-sizing: border-box;
+        margin-bottom: 1%;
+        gap: 15px;
+
+        transform: translateX(-50%) scale(1.1) translateY(-20px);
+      }
+
+      .avatar {
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        padding: 10px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #2979ff, #00e5ff, #00c853);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+      }
+
+      .avatar img {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+        background: #000;
+        padding: 10px;
+      }
+
+      .avatar::after {
+        content: "";
+        position: absolute;
+        bottom: 6px;
+        right: 25px;
+        width: 75px;
+        height: 75px;
+        background: #00e676;
+        border: 10px solid #000;
+        border-radius: 50%;
+      }
+
+      .message {
+        display: grid;
+        align-items: center;
+        gap: 30px;
+        padding: 28px;
+        background: #353535;
+        border-radius: 30px;
+        overflow: hidden;
+        margin-top: -4%;
+        max-width: 160%;
+      }
+
+      .footer {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        padding: 2% 5%;
+        justify-content: center;
+        width: max-content;
+      }
+
+      .footer-badges {
+        display: flex;
+        gap: 8px;
+      }
+
+      .username {
+        font-size: 40px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: bolder;
+        color: white !important;
+        overflow-wrap: anywhere;
+      }
+
+      .texture {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        mix-blend-mode: screen;
+        opacity: 0.6;
+        pointer-events: none;
+      }
+
+      .message-content::after {
+        display: none;
+      }
+
+      .source-icon {
+        width: 35px;
+        height: auto;
+      }
+
+      .text {
+        font-size: 31px;
+        word-wrap: break-word;
+        line-height: 45px;
+        color: #fff !important;
+        font-weight: 500;
+      }
+
+      .text img,
+      .text svg {
+        max-width: 200px;
+        max-height: 2em;
+        height: auto;
+        width: auto;
+        vertical-align: middle;
+        object-fit: contain;
+        margin: 0 2px;
+        display: inline-block;
+      }
+
+      .text img.emote,
+      .text svg.emote,
+      .text img[class*="emote"],
+      .text svg[class*="emote"] {
+        max-height: 1.5em;
+        max-width: 1.5em;
+      }
+
+      .badges {
+        display: flex;
+        gap: 4px;
+        align-items: center;
+        top: 0;
+      }
+
+      .badge {
+        height: auto;
+        width: 35px !important;
+      }
+
+      .donation-info {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 20px;
+        font-weight: 600;
+        margin-top: 8px;
+        margin-bottom: 8px;
+        background: goldenrod;
+        color: #fff;
+        border: 1px solid #244e1c;
+      }
+
+      .badges:empty,
+      .donation-info:empty {
+        display: none;
+      }
+
+      .message-wrapper.show {
+        opacity: 1 !important;
+      }
+
+      .content-image {
+        max-width: 300px;
+        max-height: 300px;
+        margin-top: 12px;
+        border-radius: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="container">
+      <div id="output"></div>
+    </div>
+
+    <script src="../assets/js/tts.js"></script>
+    <script>
+      const urlParams = new URLSearchParams(window.location.search);
+      const roomID =
+        urlParams.get("session") ||
+        urlParams.get("room") ||
+        urlParams.get("roomid") ||
+        "TESTROOM";
+      const password =
+        urlParams.get("password") ||
+        urlParams.get("pass") ||
+        urlParams.get("pw") ||
+        "false";
+      const showtime = 10000;
+      const pseudodock = urlParams.has("autoshow");
+
+      let messageTimeout = null;
+      let currentMessage = null;
+
+      function createIframe() {
+        var iframe = document.createElement("iframe");
+
+        if (pseudodock) {
+          iframe.src =
+            "https://vdo.socialstream.ninja/?ln&salt=vdo.ninja&password=" +
+            password +
+            "&push&notmobile&label=dock&vd=0&ad=0&novideo&noaudio&autostart&cleanoutput&room=" +
+            roomID;
+        } else {
+          iframe.src =
+            "https://vdo.socialstream.ninja/?ln&password=" +
+            password +
+            "&notmobile&salt=vdo.ninja&label=overlay&exclude=" +
+            roomID +
+            "&scene&novideo&noaudio&cleanoutput&room=" +
+            roomID;
+        }
+
+        iframe.style.width = "0px";
+        iframe.style.height = "0px";
+        iframe.style.position = "fixed";
+        iframe.style.left = "-100px";
+        iframe.style.top = "-100px";
+        iframe.id = "frame1";
+        document.body.appendChild(iframe);
+
+        var eventMethod = window.addEventListener
+          ? "addEventListener"
+          : "attachEvent";
+        var eventer = window[eventMethod];
+        var messageEvent =
+          eventMethod === "attachEvent" ? "onmessage" : "message";
+
+        const messageData = {
+          contents: {
+            chatname: "Codeline",
+            nameColor: "#107516",
+            chatbadges: "",
+            backgroundColor: "",
+            textColor: "",
+            chatmessage:
+              "!join The only way 2 do great work is to love what you do. If you haven't found it yet, keep looking. Don't settle. As with all matters of the heart, you'll know when you find it.",
+            chatimg: "https://socialstream.ninja/media/sampleavatar.png",
+            type: "slack",
+            hasDonation: "",
+            membership: "SPONSORSHIP",
+            id: 13832,
+            timestamp: 1770815211939,
+            containsBadWords: false,
+            command: true,
+            contentimg: "",
+            textonly: false,
+            clicked: true,
+          },
+        };
+
+        processData(messageData);
+        setInterval(() => {
+          console.log("Looping...");
+          processData(messageData);
+        }, showtime + 2000);
+      }
+
+      function processData(data) {
+        if (!data || data === false) {
+          hideMessage();
+          return;
+        }
+
+        if (data.contents === false) {
+          hideMessage();
+          return;
+        }
+
+        if (data && data.contents) {
+          showMessage(data.contents);
+        } else if (data && "content" in data) {
+          if (data.content) {
+            processData({ contents: data.content });
+          } else {
+            hideMessage();
+          }
+        } else if (data.action && "value" in data && data.action == "content") {
+          if (data.value) {
+            try {
+              const parsed = JSON.parse(data.value);
+              if (parsed && "chatmessage" in parsed) {
+                showMessage(parsed);
+              }
+            } catch (e) {}
+          } else {
+            hideMessage();
+          }
+        } else if (data && "chatmessage" in data) {
+          showMessage(data);
+        }
+      }
+
+      function showMessage(content) {
+        if (!content.chatmessage && !content.chatname) return;
+
+        hideMessage(() => {
+          const wrapper = document.createElement("div");
+          wrapper.className = "message-wrapper";
+
+          const message = document.createElement("div");
+          message.className = "message";
+
+          const fallback = "../assets/images/unknown.png";
+          const avatarWrapper = document.createElement("div");
+          avatarWrapper.className = "avatar";
+
+          const avatarImg = document.createElement("img");
+          avatarImg.src = fallback;
+
+          if (content.chatimg) {
+            avatarImg.src =
+              content.chatimg ||
+              content.chatImg ||
+              content.avatar ||
+              content.avatarUrl ||
+              content.user?.avatar ||
+              content.profile?.image ||
+              fallback;
+
+            avatarImg.onerror = () => {
+              avatarImg.onerror = null;
+              avatarImg.src = fallback;
+            };
+          }
+
+          avatarWrapper.appendChild(avatarImg);
+
+          const contentDiv = document.createElement("div");
+          contentDiv.className = "message-content";
+
+          if (content.hasDonation || content.membership) {
+            const donationDiv = document.createElement("div");
+            donationDiv.className = "donation-info";
+            if (content.hasDonation) {
+              donationDiv.textContent = content.title
+                ? `${content.title}: ${content.hasDonation}`
+                : content.hasDonation;
+            } else {
+              donationDiv.textContent =
+                typeof content.membership === "string"
+                  ? content.membership
+                  : "Member";
+            }
+            contentDiv.appendChild(donationDiv);
+          }
+
+          if (content.contentimg) {
+            const img = document.createElement("img");
+            img.className = "content-image";
+            img.src = content.contentimg;
+            contentDiv.appendChild(img);
+          }
+
+          const footerDiv = document.createElement("div");
+          footerDiv.className = "footer";
+
+          const footerBadgesDiv = document.createElement("div");
+          footerBadgesDiv.className = "footer-badges";
+
+          if (content.type) {
+            const sourceIcon = document.createElement("img");
+            sourceIcon.className = "source-icon";
+            sourceIcon.src = `../assets/images/${content.type}.png`;
+            sourceIcon.onerror = () => {
+              sourceIcon.style.display = "none";
+            };
+            footerBadgesDiv.appendChild(sourceIcon);
+          }
+
+          const header = document.createElement("div");
+          header.className = "username";
+
+          if (content.chatname) {
+            const name = document.createElement("span");
+            name.innerHTML = content.chatname;
+            header.appendChild(name);
+          }
+
+          if (content.chatbadges && Array.isArray(content.chatbadges)) {
+            const badges = document.createElement("div");
+            badges.className = "badges";
+            content.chatbadges.forEach((badge) => {
+              const img = document.createElement("img");
+              img.className = "badge";
+              img.src = typeof badge === "string" ? badge : badge.src;
+              badges.appendChild(img);
+            });
+            footerBadgesDiv.appendChild(badges);
+          }
+
+          if (content.chatmessage) {
+            const text = document.createElement("div");
+            text.className = "text";
+            text.innerHTML = content.chatmessage;
+            if (content.textColor) {
+              text.style.color = content.textColor;
+            }
+            contentDiv.appendChild(text);
+          }
+
+          footerDiv.appendChild(footerBadgesDiv);
+          footerDiv.appendChild(header);
+
+          wrapper.appendChild(footerDiv);
+          wrapper.appendChild(avatarWrapper);
+          message.appendChild(contentDiv);
+          wrapper.appendChild(message);
+
+          const output = document.getElementById("output");
+          output.innerHTML = "";
+          output.appendChild(wrapper);
+
+          wrapper.classList.add("hide");
+          wrapper.offsetHeight;
+
+          wrapper.classList.remove("hide");
+          wrapper.classList.add("show");
+
+          requestAnimationFrame(() => {
+            wrapper.classList.add("show");
+          });
+
+          currentMessage = wrapper;
+
+          if (messageTimeout) clearTimeout(messageTimeout);
+          messageTimeout = setTimeout(() => {
+            hideMessage();
+          }, showtime);
+        });
+      }
+
+      function hideMessage(callback) {
+        if (messageTimeout) {
+          clearTimeout(messageTimeout);
+          messageTimeout = null;
+        }
+
+        if (currentMessage) {
+          currentMessage.classList.remove("show");
+          currentMessage.classList.add("hide");
+          setTimeout(() => {
+            if (currentMessage?.parentNode) {
+              currentMessage.parentNode.removeChild(currentMessage);
+            }
+            currentMessage = null;
+            if (callback) callback();
+          }, 800);
+        } else if (callback) {
+          callback();
+        }
+      }
+
+      createIframe();
+    </script>
+  </body>
+</html>
