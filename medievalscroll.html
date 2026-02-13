@@ -91,6 +91,7 @@
 
       .text {
         display: -webkit-box;
+        line-clamp: 4;
         -webkit-line-clamp: 4;
         -webkit-box-orient: vertical;
         overflow: hidden;
@@ -99,36 +100,9 @@
     </style>
   </head>
   <body>
-    <div id="output">
-      <!-- <div class="scroll-wrapper">
-        <img
-          src="./assets/images/material/medieval_scroll_handle.png"
-          class="roller left"
-        />
-
-        <div class="parchment">
-          <div class="content">
-            <h2 id="title"></h2>
-            <div class="message"></div>
-          </div>
-        </div>
-
-        <img
-          src="./assets/images/material/medieval_scroll_handle.png"
-          class="roller right"
-        />
-      </div> -->
-    </div>
+    <div id="output"></div>
 
     <script>
-      //   window.addEventListener("load", () => {
-      //     const parchment = document.querySelector(".parchment");
-
-      //     setTimeout(() => {
-      //       parchment.classList.add("open");
-      //     }, 100);
-      //   });
-
       const urlParams = new URLSearchParams(window.location.search);
       const roomID =
         urlParams.get("session") ||
@@ -235,7 +209,6 @@
       }
 
       function showMessage(content) {
-        // debugger;
         if (!content.chatmessage && !content.chatname) return;
 
         hideMessage(() => {
@@ -264,49 +237,6 @@
           const message = document.createElement("h2");
           message.className = "message";
 
-          //   if (content.hasDonation || content.membership) {
-          //     const donationDiv = document.createElement("div");
-          //     donationDiv.className = "donation-info";
-          //     if (content.hasDonation) {
-          //       donationDiv.textContent = content.title
-          //         ? `${content.title}: ${content.hasDonation}`
-          //         : content.hasDonation;
-          //     } else {
-          //       donationDiv.textContent =
-          //         typeof content.membership === "string"
-          //           ? content.membership
-          //           : "Member";
-          //     }
-          //     contentDiv.appendChild(donationDiv);
-          //   }
-
-          //   if (content.contentimg) {
-          //     const img = document.createElement("img");
-          //     img.className = "content-image";
-          //     img.src = content.contentimg;
-          //     contentDiv.appendChild(img);
-          //   }
-
-          //   const footerDiv = document.createElement("div");
-          //   footerDiv.className = "footer";
-
-          //   const footerBadgesDiv = document.createElement("div");
-          //   footerBadgesDiv.className = "footer-badges";
-
-          //   if (content.type) {
-          //     const sourceIcon = document.createElement("img");
-          //     sourceIcon.className = "source-icon";
-          //     sourceIcon.src = `./assets/images/${content.type}.png`;
-          //     sourceIcon.onerror = () => {
-          //       sourceIcon.style.display = "none";
-          //     };
-          //     footerBadgesDiv.appendChild(sourceIcon);
-          //   }
-
-          //   const header = document.createElement("div");
-          //   header.className = "username";
-
-          //! title
           if (content.chatname) {
             const name = document.createElement("span");
             name.innerHTML = content.chatname;
@@ -367,10 +297,10 @@
 
           currentMessage = wrapper;
 
-          //   if (messageTimeout) clearTimeout(messageTimeout);
-          //   messageTimeout = setTimeout(() => {
-          //     hideMessage();
-          //   }, showtime);
+          if (messageTimeout) clearTimeout(messageTimeout);
+          messageTimeout = setTimeout(() => {
+            hideMessage();
+          }, showtime);
         });
       }
 
