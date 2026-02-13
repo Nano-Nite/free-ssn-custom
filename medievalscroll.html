@@ -60,6 +60,7 @@
         color: #5a3b1f;
         transition: opacity 0.8s ease;
         margin-left: 60px;
+        max-height: 265px;
       }
 
       .parchment.open {
@@ -77,11 +78,23 @@
       }
 
       .badge {
-        width: 20px;
+        width: 45px;
       }
 
       .title {
         margin-top: 0;
+        padding-top: 20px;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+      }
+
+      .text {
+        display: -webkit-box;
+        -webkit-line-clamp: 4;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        color: #713600 !important;
       }
     </style>
   </head>
@@ -297,8 +310,6 @@
           if (content.chatname) {
             const name = document.createElement("span");
             name.innerHTML = content.chatname;
-            title.appendChild(name);
-          }
 
             if (content.chatbadges && Array.isArray(content.chatbadges)) {
               const badges = document.createElement("div");
@@ -309,8 +320,11 @@
                 img.src = typeof badge === "string" ? badge : badge.src;
                 badges.appendChild(img);
               });
-              contents.appendChild(badges);
+              title.appendChild(badges);
             }
+
+            title.appendChild(name);
+          }
 
           if (content.chatmessage) {
             const text = document.createElement("div");
@@ -341,23 +355,9 @@
           wrapper.appendChild(parchment);
           wrapper.appendChild(rollerRight);
 
-          //   footerDiv.appendChild(footerBadgesDiv);
-          //   footerDiv.appendChild(header);
-
-          //   wrapper.appendChild(footerDiv);
-          //   wrapper.appendChild(avatarWrapper);
-          //   message.appendChild(contentDiv);
-          //   wrapper.appendChild(message);
-
           const output = document.getElementById("output");
           output.innerHTML = "";
           output.appendChild(wrapper);
-
-          //   wrapper.classList.add("hide");
-          //   wrapper.offsetHeight;
-
-          //   wrapper.classList.remove("hide");
-          //   wrapper.classList.add("show");
 
           requestAnimationFrame(() => {
             setTimeout(() => {
