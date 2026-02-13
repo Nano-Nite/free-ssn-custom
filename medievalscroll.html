@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Medieval Scroll</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&display=swap");
+
+      body {
+        background: transparent;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        font-family: "Cormorant Garamond", serif;
+      }
+
+      .scroll-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+      }
+
+      /* Rollers */
+      .roller {
+        width: 92px;
+        height: auto;
+        /* background: linear-gradient(180deg, #f5e6b5, #e2c37e); */
+        /* border-radius: 20px; */
+        /* box-shadow: inset -8px 0 10px rgba(0, 0, 0, 0.25); */
+      }
+
+      .roller.left {
+        margin-right: -105px;
+        z-index: 3;
+      }
+
+      .roller.right {
+        margin-left: -25px;
+        transform: scaleX(-1);
+        z-index: 2;
+      }
+
+      /* Parchment */
+      .parchment {
+        overflow: hidden;
+        width: 0;
+        height: 342px;
+        background: url(./assets/images/material/medieval_scroll_body.png);
+        transition: width 1.6s ease-in-out;
+        background-size: cover;
+        z-index: 1;
+      }
+
+      /* Content */
+      .contents {
+        opacity: 0;
+        padding: 40px;
+        width: 423px;
+        color: #5a3b1f;
+        transition: opacity 0.8s ease;
+        margin-left: 60px;
+      }
+
+      .parchment.open {
+        width: 537px;
+      }
+
+      .parchment.open .contents {
+        opacity: 1;
+        text-align: center;
+        font-size: x-large;
+      }
+
+      .gift-image {
+        width: 100px;
+      }
+
+      .badge {
+        width: 20px;
+      }
+
+      .title {
+        margin-top: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="output">
+      <!-- <div class="scroll-wrapper">
+        <img
+          src="./assets/images/material/medieval_scroll_handle.png"
+          class="roller left"
+        />
+
+        <div class="parchment">
+          <div class="content">
+            <h2 id="title"></h2>
+            <div class="message"></div>
+          </div>
+        </div>
+
+        <img
+          src="./assets/images/material/medieval_scroll_handle.png"
+          class="roller right"
+        />
+      </div> -->
+    </div>
+
+    <script>
+      //   window.addEventListener("load", () => {
+      //     const parchment = document.querySelector(".parchment");
+
+      //     setTimeout(() => {
+      //       parchment.classList.add("open");
+      //     }, 100);
+      //   });
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const roomID =
+        urlParams.get("session") ||
+        urlParams.get("room") ||
+        urlParams.get("roomid") ||
+        "TESTROOM";
+      const password =
+        urlParams.get("password") ||
+        urlParams.get("pass") ||
+        urlParams.get("pw") ||
+        "false";
+      const showtime = 10000;
+      const pseudodock = urlParams.has("autoshow");
+
+      let messageTimeout = null;
+      let currentMessage = null;
+
+      function createIframe() {
+        var iframe = document.createElement("iframe");
+
+        if (pseudodock) {
+          iframe.src =
+            "https://vdo.socialstream.ninja/?ln&salt=vdo.ninja&password=" +
+            password +
+            "&push&notmobile&label=dock&vd=0&ad=0&novideo&noaudio&autostart&cleanoutput&room=" +
+            roomID;
+        } else {
+          iframe.src =
+            "https://vdo.socialstream.ninja/?ln&password=" +
+            password +
+            "&notmobile&salt=vdo.ninja&label=overlay&exclude=" +
+            roomID +
+            "&scene&novideo&noaudio&cleanoutput&room=" +
+            roomID;
+        }
+
+        iframe.style.width = "0px";
+        iframe.style.height = "0px";
+        iframe.style.position = "fixed";
+        iframe.style.left = "-100px";
+        iframe.style.top = "-100px";
+        iframe.id = "frame1";
+        document.body.appendChild(iframe);
+
+        var eventMethod = window.addEventListener
+          ? "addEventListener"
+          : "attachEvent";
+        var eventer = window[eventMethod];
+        var messageEvent =
+          eventMethod === "attachEvent" ? "onmessage" : "message";
+
+        eventer(messageEvent, function (e) {
+          if (e.source != iframe.contentWindow) return;
+
+          if ("dataReceived" in e.data) {
+            if ("overlayNinja" in e.data.dataReceived) {
+              if (
+                e.data.dataReceived.overlayNinja &&
+                "response" in e.data.dataReceived.overlayNinja
+              ) {
+              } else {
+                processData({
+                  contents: e.data.dataReceived.overlayNinja,
+                });
+              }
+            }
+          }
+        });
+      }
+
+      function processData(data) {
+        if (!data || data === false) {
+          hideMessage();
+          return;
+        }
+
+        if (data.contents === false) {
+          hideMessage();
+          return;
+        }
+
+        if (data && data.contents) {
+          showMessage(data.contents);
+        } else if (data && "content" in data) {
+          if (data.content) {
+            processData({ contents: data.content });
+          } else {
+            hideMessage();
+          }
+        } else if (data.action && "value" in data && data.action == "content") {
+          if (data.value) {
+            try {
+              const parsed = JSON.parse(data.value);
+              if (parsed && "chatmessage" in parsed) {
+                showMessage(parsed);
+              }
+            } catch (e) {}
+          } else {
+            hideMessage();
+          }
+        } else if (data && "chatmessage" in data) {
+          showMessage(data);
+        }
+      }
+
+      function showMessage(content) {
+        // debugger;
+        if (!content.chatmessage && !content.chatname) return;
+
+        hideMessage(() => {
+          const wrapper = document.createElement("div");
+          wrapper.className = "scroll-wrapper";
+
+          const rollerLeft = document.createElement("img");
+          rollerLeft.src =
+            "./assets/images/material/medieval_scroll_handle.png";
+          rollerLeft.className = "roller left";
+
+          const rollerRight = document.createElement("img");
+          rollerRight.src =
+            "./assets/images/material/medieval_scroll_handle.png";
+          rollerRight.className = "roller right";
+
+          const parchment = document.createElement("div");
+          parchment.className = "parchment";
+
+          const contents = document.createElement("div");
+          contents.className = "contents";
+
+          const title = document.createElement("h3");
+          title.className = "title";
+
+          const message = document.createElement("h2");
+          message.className = "message";
+
+          //   if (content.hasDonation || content.membership) {
+          //     const donationDiv = document.createElement("div");
+          //     donationDiv.className = "donation-info";
+          //     if (content.hasDonation) {
+          //       donationDiv.textContent = content.title
+          //         ? `${content.title}: ${content.hasDonation}`
+          //         : content.hasDonation;
+          //     } else {
+          //       donationDiv.textContent =
+          //         typeof content.membership === "string"
+          //           ? content.membership
+          //           : "Member";
+          //     }
+          //     contentDiv.appendChild(donationDiv);
+          //   }
+
+          //   if (content.contentimg) {
+          //     const img = document.createElement("img");
+          //     img.className = "content-image";
+          //     img.src = content.contentimg;
+          //     contentDiv.appendChild(img);
+          //   }
+
+          //   const footerDiv = document.createElement("div");
+          //   footerDiv.className = "footer";
+
+          //   const footerBadgesDiv = document.createElement("div");
+          //   footerBadgesDiv.className = "footer-badges";
+
+          //   if (content.type) {
+          //     const sourceIcon = document.createElement("img");
+          //     sourceIcon.className = "source-icon";
+          //     sourceIcon.src = `./assets/images/${content.type}.png`;
+          //     sourceIcon.onerror = () => {
+          //       sourceIcon.style.display = "none";
+          //     };
+          //     footerBadgesDiv.appendChild(sourceIcon);
+          //   }
+
+          //   const header = document.createElement("div");
+          //   header.className = "username";
+
+          //! title
+          if (content.chatname) {
+            const name = document.createElement("span");
+            name.innerHTML = content.chatname;
+            title.appendChild(name);
+          }
+
+            if (content.chatbadges && Array.isArray(content.chatbadges)) {
+              const badges = document.createElement("div");
+              badges.className = "badges";
+              content.chatbadges.forEach((badge) => {
+                const img = document.createElement("img");
+                img.className = "badge";
+                img.src = typeof badge === "string" ? badge : badge.src;
+                badges.appendChild(img);
+              });
+              contents.appendChild(badges);
+            }
+
+          if (content.chatmessage) {
+            const text = document.createElement("div");
+            text.className = "text";
+            text.innerHTML = content.chatmessage;
+
+            const icon = text.querySelector("i");
+            if (!icon) {
+              console.log("The <i> tag is missing!");
+            } else {
+              console.log("The <i> tag is there.");
+              const img = icon.querySelector("img");
+              if (img) {
+                img.className = "gift-image";
+                icon.replaceChildren(img);
+              }
+            }
+
+            message.appendChild(text);
+          }
+
+          contents.appendChild(title);
+          contents.appendChild(message);
+
+          parchment.appendChild(contents);
+
+          wrapper.appendChild(rollerLeft);
+          wrapper.appendChild(parchment);
+          wrapper.appendChild(rollerRight);
+
+          //   footerDiv.appendChild(footerBadgesDiv);
+          //   footerDiv.appendChild(header);
+
+          //   wrapper.appendChild(footerDiv);
+          //   wrapper.appendChild(avatarWrapper);
+          //   message.appendChild(contentDiv);
+          //   wrapper.appendChild(message);
+
+          const output = document.getElementById("output");
+          output.innerHTML = "";
+          output.appendChild(wrapper);
+
+          //   wrapper.classList.add("hide");
+          //   wrapper.offsetHeight;
+
+          //   wrapper.classList.remove("hide");
+          //   wrapper.classList.add("show");
+
+          requestAnimationFrame(() => {
+            setTimeout(() => {
+              parchment.classList.add("open");
+            }, 200);
+          });
+
+          currentMessage = wrapper;
+
+          //   if (messageTimeout) clearTimeout(messageTimeout);
+          //   messageTimeout = setTimeout(() => {
+          //     hideMessage();
+          //   }, showtime);
+        });
+      }
+
+      function hideMessage(callback) {
+        if (messageTimeout) {
+          clearTimeout(messageTimeout);
+          messageTimeout = null;
+        }
+
+        if (currentMessage) {
+          currentMessage.classList.remove("open");
+          //   currentMessage.classList.add("hide");
+          setTimeout(() => {
+            if (currentMessage?.parentNode) {
+              currentMessage.parentNode.removeChild(currentMessage);
+            }
+            currentMessage = null;
+            if (callback) callback();
+          }, 800);
+        } else if (callback) {
+          callback();
+        }
+      }
+
+      createIframe();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cafe Board Cinematic</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pacifico&family=Patrick+Hand&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      body {
+        margin: 0;
+        height: 100vh;
+        background: radial-gradient(circle at bottom, #8fd3c8, #a8ded1);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: "Patrick Hand", cursive;
+      }
+
+      /* ===== SCENE ===== */
+      /* .scene { */
+        /* perspective: 1400px; */
+      /* } */
+
+      /* ===== STAND ===== */
+      .stand {
+        position: relative;
+        width: 380px;
+        height: 560px;
+        transform-style: preserve-3d;
+        /* transform: rotateY(-25deg); */
+        /* animation: sway 6s ease-in-out infinite; */
+      }
+
+      @keyframes sway {
+        0%,
+        100% {
+          transform: rotateY(-25deg) rotateZ(0deg);
+        }
+        50% {
+          transform: rotateY(-23deg) rotateZ(0.4deg);
+        }
+      }
+
+      /* ===== WOOD TEXTURE ===== */
+      .wood {
+        background:
+          repeating-linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0.08),
+            rgba(0, 0, 0, 0.1) 6px,
+            rgba(255, 255, 255, 0.04) 12px
+          ),
+          repeating-linear-gradient(0deg, #7a5233, #7a5233 10px, #6b4a2f 14px);
+      }
+
+      /* ===== LEGS ===== */
+      .leg {
+        position: absolute;
+        top: 90px;
+        width: 30px;
+        height: 450px;
+        border-radius: 6px;
+        box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.45);
+      }
+
+      .leg.left {
+        left: 85px;
+        transform: rotateZ(8deg);
+      }
+
+      .leg.right {
+        right: 85px;
+        transform: rotateZ(-8deg);
+      }
+
+      .leg.back {
+        left: 50%;
+        top: 120px;
+        height: 380px;
+        width: 26px;
+        transform: translateX(-50%) translateZ(-40px) rotateZ(0deg)
+          rotateX(8deg);
+        opacity: 0.9;
+        filter: brightness(0.9);
+      }
+
+      .leg::after {
+        content: "";
+        position: absolute;
+        bottom: -6px;
+        left: 50%;
+        width: 18px;
+        height: 10px;
+        background: rgba(0, 0, 0, 0.35);
+        transform: translateX(-50%);
+        filter: blur(4px);
+        border-radius: 50%;
+      }
+
+      /* ===== BOTTOM WOOD FRAME (LEFT & RIGHT ONLY) ===== */
+      .frame-wood {
+        position: absolute;
+        bottom: 40px;
+        width: 22px;
+        height: 120px;
+        border-radius: 6px;
+        box-shadow:
+          inset 0 0 10px rgba(0, 0, 0, 0.45),
+          0 8px 14px rgba(0, 0, 0, 0.25);
+        z-index: 3;
+      }
+
+      /* kiri */
+      .frame-wood.left {
+        left: 92px;
+        transform: rotateZ(6deg) translateZ(8px);
+      }
+
+      /* kanan */
+      .frame-wood.right {
+        right: 92px;
+        transform: rotateZ(-6deg) translateZ(8px);
+      }
+
+      /* ===== CONNECTOR ===== */
+      .connector {
+        position: absolute;
+        top: 300px;
+        left: 50%;
+        width: 180px;
+        height: 10px;
+        transform: translateX(-50%);
+        border-radius: 4px;
+        box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.4);
+      }
+
+      /* ===== BOARD ===== */
+      .board {
+        position: relative;
+        margin: auto;
+        width: 260px;
+        height: 420px;
+        background: radial-gradient(circle at 30% 30%, #2b2b2b, #151515);
+        border-radius: 140px 140px 12px 12px;
+        box-shadow: 0 40px 60px rgba(0, 0, 0, 0.45);
+        overflow: hidden;
+      }
+
+      /* Wood frame */
+      .board::after {
+        content: "";
+        position: absolute;
+        inset: -14px;
+        border-radius: 150px 150px 16px 16px;
+        background:
+          repeating-linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0.07),
+            rgba(0, 0, 0, 0.15) 8px
+          ),
+          linear-gradient(#7a5233, #5a3a22);
+        z-index: -1;
+      }
+
+      /* ===== FLOOR SHADOW ===== */
+      .shadow {
+        position: absolute;
+        bottom: 0px;
+        left: 50%;
+        width: 420px;
+        height: 91px;
+        background: radial-gradient(
+          ellipse at center,
+          rgba(0, 0, 0, 0.28),
+          transparent 70%
+        );
+        transform: translateX(-50%) rotateX(65deg);
+        filter: blur(6px);
+      }
+
+      /* ===== CONTENT ===== */
+      .content {
+        padding: 40px 20px;
+        color: #f5f5f5;
+        text-align: center;
+      }
+
+      /* ===== CHALK WRITE ===== */
+      .write span {
+        display: inline-block;
+        overflow: hidden;
+        white-space: nowrap;
+        animation: write 1.2s steps(20) forwards;
+      }
+
+      @keyframes write {
+        from {
+          width: 0;
+        }
+        to {
+          width: 100%;
+        }
+      }
+
+      /* ===== ERASE ===== */
+      .erase {
+        animation: erase 1.3s ease forwards;
+      }
+
+      @keyframes erase {
+        from {
+          clip-path: inset(0 0 0 0);
+          opacity: 1;
+        }
+        to {
+          clip-path: inset(0 100% 0 0);
+          opacity: 0;
+        }
+      }
+
+      /* ===== TEXT ===== */
+      .title {
+        font-family: "Pacifico", cursive;
+        font-size: 36px;
+      }
+
+      .subtitle {
+        font-size: 16px;
+        margin-bottom: 30px;
+      }
+
+      .menu {
+        font-size: 22px;
+        text-decoration: underline;
+        margin-bottom: 12px;
+      }
+
+      .item {
+        display: flex;
+        justify-content: space-between;
+        font-size: 20px;
+        margin: 10px 0;
+      }
+
+      .open {
+        margin-top: 28px;
+        font-size: 18px;
+        border-top: 1px dashed #aaa;
+        padding-top: 16px;
+      }
+
+      .time {
+        font-size: 22px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="scene">
+      <div class="stand">
+        <div class="leg left wood"></div>
+        <div class="leg right wood"></div>
+        <div class="leg back wood"></div>
+        <div class="connector wood"></div>
+
+        <!-- <div class="frame-wood left wood"></div>
+        <div class="frame-wood right wood"></div> -->
+
+        <div class="board">
+          <div class="content write" id="content">
+            <div class="title"><span>Euphoria</span></div>
+            <div class="subtitle"><span>Cafe</span></div>
+
+            <div class="menu"><span>Menu · New Arrivals</span></div>
+
+            <div class="item">
+              <span><span>Dry Cappuccino</span></span>
+              <span><span>$10</span></span>
+            </div>
+            <div class="item">
+              <span><span>Espresso Con Panna</span></span>
+              <span><span>$12</span></span>
+            </div>
+
+            <div class="open"><span>YES We are open!</span></div>
+            <div class="time"><span>10:00 - 18:00</span></div>
+          </div>
+        </div>
+
+        <div class="shadow"></div>
+      </div>
+    </div>
+
+    <script>
+      const content = document.getElementById("content");
+      const original = content.innerHTML;
+
+      setInterval(() => {
+        content.classList.add("erase");
+
+        setTimeout(() => {
+          content.classList.remove("erase");
+          content.innerHTML = original;
+          content.classList.remove("write");
+          void content.offsetWidth; // reflow
+          content.classList.add("write");
+          content.style.opacity = 1;
+        }, 1400);
+      }, 4200);
+    </script>
+  </body>
+</html>

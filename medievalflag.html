@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Banner Lusuh Digital</title>
+    <style>
+      :root {
+        --banner-red-dirty: #a00000; /* Merah yang lebih gelap dan kotor */
+        --gold-dirty: #c29b00; /* Emas yang lebih tua */
+        --pole-dark: #6b6b6b; /* Tiang yang lebih gelap */
+        --rust-color: #8b4513; /* Warna karat */
+      }
+
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background-color: #333; /* Latar belakang gelap untuk kontras */
+        margin: 0;
+        font-family: sans-serif;
+        overflow: hidden; /* Mencegah scroll jika ada elemen di luar viewport */
+      }
+
+      /* --- Tiang Penyangga Utama --- */
+      .stand-container {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        perspective: 1000px; /* Untuk efek 3D pada tiang */
+      }
+
+      .vertical-pole {
+        width: 20px; /* Lebih tebal */
+        height: 450px; /* Lebih pendek */
+        background: linear-gradient(to right, #444, #777, #444);
+        border-radius: 5px;
+        position: absolute;
+        z-index: 1;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+        transform-origin: top;
+        transform: rotateX(5deg) rotateY(2deg); /* Sedikit miring */
+      }
+
+      /* Batang Horizontal (yang menopang kain) */
+      .horizontal-bar {
+        width: 250px;
+        height: 30px; /* Lebih tebal */
+        background: linear-gradient(
+          to bottom,
+          var(--pole-dark),
+          #999,
+          var(--pole-dark)
+        );
+        border-radius: 5px;
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
+        position: relative;
+        z-index: 3;
+        margin-top: 50px; /* Menggantung lebih rendah dari tiang */
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 10px;
+      }
+
+      /* Mur di ujung tiang horizontal */
+      .nut {
+        width: 25px;
+        height: 25px;
+        background: #555;
+        border-radius: 50%;
+        position: relative;
+        box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
+      }
+      .nut::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 15px;
+        height: 15px;
+        background: #444;
+        border-radius: 50%;
+        box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.7);
+      }
+
+      /* Tali Gantung */
+      .rope {
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        background: #663300;
+        position: absolute;
+        top: 15px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 4;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+      }
+      .rope::before,
+      .rope::after {
+        content: "";
+        position: absolute;
+        width: 3px;
+        height: 114px; /* Panjang tali */
+        background-color: #663300;
+        top: 50px;
+        transform-origin: top center;
+        z-index: -1;
+      }
+      .rope::before {
+        left: calc(50% - 114px); /* Posisi tali kiri */
+        transform: rotate(-112deg);
+      }
+      .rope::after {
+        right: calc(50% - 112px); /* Posisi tali kanan */
+        transform: rotate(112deg);
+      }
+
+      /* --- Banner Utama --- */
+      .banner-wrapper {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.5));
+        margin-top: -15px; /* Sedikit menutupi batang horizontal */
+      }
+
+      /* Kain Merah */
+      .fabric {
+        width: 200px;
+        height: 300px; /* Lebih panjang */
+        background-color: var(--banner-red-dirty);
+        /* background-image:
+          radial-gradient(
+            circle at 20% 80%,
+            rgba(0, 0, 0, 0.4) 10%,
+            transparent 20%
+          ),
+          radial-gradient(
+            circle at 80% 30%,
+            rgba(0, 0, 0, 0.3) 15%,
+            transparent 25%
+          ),
+          radial-gradient(
+            circle at 50% 50%,
+            rgba(0, 0, 0, 0.5) 5%,
+            transparent 15%
+          ), */
+        /* url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="4" height="4"><rect fill="%23a00000" width="4" height="4"/><path fill="%23800000" d="M1 0h1v1h-1zM0 2h1v1h-1zM3 1h1v1h-1zM2 3h1v1h-1z"/></svg>'); */
+
+        background-size:
+          100% 100%,
+          100% 100%,
+          100% 100%,
+          50px 50px; /* Ukuran untuk tekstur */
+        margin-top: -10px;
+        clip-path: polygon(0% 0%, 100% 0%, 100% 85%, 50% 100%, 0% 85%);
+        border: 5px solid var(--gold-dirty); /* Tebal border emas */
+        border-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><path fill="%23c29b00" d="M0,0 H100 V100 H0 Z M10,10 H90 V90 H10 Z" /><path fill="%23a00000" d="M10,10 H90 V90 H10 Z" opacity="0.5" /></svg>')
+          20 round; /* Border gambar untuk efek robek */
+        box-shadow:
+          inset 0 0 50px rgba(0, 0, 0, 0.7),
+          0 5px 15px rgba(0, 0, 0, 0.5);
+        position: relative;
+        overflow: hidden; /* Penting untuk pseudo-elemen robek */
+      }
+
+      /* Efek robek dan terbakar */
+      .fabric::before,
+      .fabric::after {
+        content: "";
+        position: absolute;
+        background: rgba(0, 0, 0, 0.7); /* Efek terbakar */
+        border-radius: 50%;
+        filter: blur(3px);
+        z-index: 4;
+      }
+
+      .fabric::before {
+        width: 40px;
+        height: 20px;
+        top: 20px;
+        left: -10px; /* Keluar dari batas untuk efek robek di tepi */
+        transform: rotate(-15deg);
+        background: linear-gradient(to right, rgba(0, 0, 0, 0.7), transparent);
+        border-radius: 50% 0 0 50%;
+      }
+
+      .fabric::after {
+        width: 30px;
+        height: 30px;
+        bottom: 40px;
+        right: -15px;
+        transform: rotate(20deg);
+        background: linear-gradient(to left, rgba(0, 0, 0, 0.7), transparent);
+        border-radius: 0 50% 50% 0;
+      }
+
+      /* Noda dan kotoran tambahan */
+      .fabric .dirt {
+        position: absolute;
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 50%;
+        filter: blur(5px);
+        z-index: 5;
+      }
+      .fabric .dirt.d1 {
+        width: 30px;
+        height: 15px;
+        top: 10%;
+        left: 15%;
+        transform: rotate(10deg);
+      }
+      .fabric .dirt.d2 {
+        width: 40px;
+        height: 25px;
+        bottom: 20%;
+        right: 25%;
+        transform: rotate(-20deg);
+        background: rgba(var(--rust-color), 0.5);
+      }
+      .fabric .dirt.d3 {
+        width: 20px;
+        height: 35px;
+        top: 40%;
+        right: 10%;
+        transform: rotate(30deg);
+        background: rgba(var(--rust-color), 0.7);
+      }
+
+      /* Dudukan Bawah (opsional, jika ingin membuat tiang terlihat ditanam) */
+      .base {
+        width: 150px;
+        height: 20px;
+        background: radial-gradient(circle, #555, #222);
+        border-radius: 50%;
+        position: absolute;
+        bottom: 0; /* Posisi relatif terhadap .stand-container */
+        z-index: 0;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        right:-66px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="stand-container">
+      <div class="vertical-pole"><div class="base"></div></div>
+      <div class="rope"></div>
+
+      <div class="horizontal-bar">
+        <div class="nut"></div>
+        <div class="nut"></div>
+      </div>
+
+      <div class="banner-wrapper">
+        <div class="fabric">
+          <div class="dirt d1"></div>
+          <div class="dirt d2"></div>
+          <div class="dirt d3"></div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
