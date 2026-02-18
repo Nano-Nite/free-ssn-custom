@@ -41,7 +41,7 @@
         overflow: hidden;
         width: 0;
         height: 342px;
-        background: url(./assets/images/material/medieval_scroll_body.png);
+        background: url(../assets/images/material/medieval_scroll_body.png);
         transition: width 1.6s ease-in-out;
         background-size: cover;
         z-index: 1;
@@ -165,6 +165,35 @@
             }
           }
         });
+        
+        const messageData = {
+          contents: {
+            chatname: "Codeline",
+            nameColor: "#107516",
+            chatbadges: "",
+            backgroundColor: "",
+            textColor: "",
+            chatmessage:
+              "!join The only way 2 do great work is to love what you do. If you haven't found it yet, keep looking. Don't settle. As with all matters of the heart, you'll know when you find it.",
+            chatimg: "https://socialstream.ninja/media/sampleavatar.png",
+            type: "slack",
+            hasDonation: "",
+            membership: "SPONSORSHIP",
+            id: 13832,
+            timestamp: 1770815211939,
+            containsBadWords: false,
+            command: true,
+            contentimg: "",
+            textonly: false,
+            clicked: true,
+          },
+        };
+
+        processData(messageData);
+        setInterval(() => {
+          console.log("Looping...");
+          processData(messageData);
+        }, showtime + 2000);
       }
 
       function processData(data) {
@@ -211,12 +240,12 @@
 
           const rollerLeft = document.createElement("img");
           rollerLeft.src =
-            "./assets/images/material/medieval_scroll_handle.png";
+            "../assets/images/material/medieval_scroll_handle.png";
           rollerLeft.className = "roller left";
 
           const rollerRight = document.createElement("img");
           rollerRight.src =
-            "./assets/images/material/medieval_scroll_handle.png";
+            "../assets/images/material/medieval_scroll_handle.png";
           rollerRight.className = "roller right";
 
           const parchment = document.createElement("div");
@@ -257,9 +286,9 @@
 
             const icon = text.querySelector("i");
             if (!icon) {
-              console.log("The <i> tag is missing!");
+              // console.log("The <i> tag is missing!");
             } else {
-              console.log("The <i> tag is there.");
+              // console.log("The <i> tag is there.");
               const img = icon.querySelector("img");
               if (img) {
                 img.className = "gift-image";

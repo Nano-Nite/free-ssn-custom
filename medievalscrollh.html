@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Medieval Scroll</title>
+    <title>Medieval Scroll Horizontal</title>
     <style>
       @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&display=swap");
 
@@ -27,21 +27,25 @@
       }
 
       .roller.left {
-        margin-right: -105px;
+        margin-right: -120px;
         z-index: 3;
+        scale: 1.2;
+        rotate: 180deg;
       }
 
       .roller.right {
         margin-left: -25px;
         transform: scaleX(-1);
         z-index: 2;
+        scale: 1.2;
+        rotate: 180deg;
       }
 
       .parchment {
         overflow: hidden;
         width: 0;
-        height: 342px;
-        background: url(./assets/images/material/medieval_scroll_body.png);
+        height: 400px;
+        background: url(../assets/images/material/medieval_scroll_body.png);
         transition: width 1.6s ease-in-out;
         background-size: cover;
         z-index: 1;
@@ -50,15 +54,16 @@
       .contents {
         opacity: 0;
         padding: 40px;
-        width: 423px;
+        width: 300px;
         color: #5a3b1f;
         transition: opacity 0.8s ease;
-        margin-left: 60px;
-        max-height: 265px;
+        height: 350px;
+        rotate:-90deg;
+        margin-left:100px;
       }
 
       .parchment.open {
-        width: 537px;
+        width: 500px;
       }
 
       .parchment.open .contents {
@@ -85,11 +90,15 @@
 
       .text {
         display: -webkit-box;
-        line-clamp: 4;
-        -webkit-line-clamp: 4;
+        line-clamp: 6;
+        -webkit-line-clamp: 6;
         -webkit-box-orient: vertical;
         overflow: hidden;
         color: #713600 !important;
+      }
+
+      #output{
+        rotate: 90deg;
       }
     </style>
   </head>
@@ -108,7 +117,7 @@
         urlParams.get("pass") ||
         urlParams.get("pw") ||
         "false";
-      const showtime = 10000;
+      const showtime = 100000;
       const pseudodock = urlParams.has("autoshow");
 
       let messageTimeout = null;
@@ -211,12 +220,12 @@
 
           const rollerLeft = document.createElement("img");
           rollerLeft.src =
-            "./assets/images/material/medieval_scroll_handle.png";
+            "../assets/images/material/medieval_scroll_handle.png";
           rollerLeft.className = "roller left";
 
           const rollerRight = document.createElement("img");
           rollerRight.src =
-            "./assets/images/material/medieval_scroll_handle.png";
+            "../assets/images/material/medieval_scroll_handle.png";
           rollerRight.className = "roller right";
 
           const parchment = document.createElement("div");
@@ -306,7 +315,6 @@
 
         if (currentMessage) {
           currentMessage.classList.remove("open");
-          //   currentMessage.classList.add("hide");
           setTimeout(() => {
             if (currentMessage?.parentNode) {
               currentMessage.parentNode.removeChild(currentMessage);
